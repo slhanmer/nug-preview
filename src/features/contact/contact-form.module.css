@@ -1,0 +1,109 @@
+/*
+ * The contact form's own layout, and nothing else.
+ *
+ * Labels, controls, hints, errors and the counter all come from the kit now —
+ * `.sauce-field*` in ui-kit/kit.css. This file arranges them and owns the two
+ * things that are not fields: the notice and the success panel.
+ *
+ * It does not, and must not, reach inside a kit control. Same rule the skins
+ * follow towards this file.
+ */
+
+@layer components {
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+  }
+
+  /* Email and phone share a line when there is room. */
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--space-4);
+  }
+
+  /* --------------------------------------------------------------- notices */
+
+  .notice {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    color: var(--text-primary);
+    background: var(--surface-recessed);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-2);
+  }
+
+  .configNote {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+    line-height: var(--leading-body);
+    color: var(--text-secondary);
+    background: var(--surface-recessed);
+    border: 1px dashed var(--edge-strong);
+    border-radius: var(--radius-1);
+  }
+
+  /* --------------------------------------------------------------- submit */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-start: var(--space-2);
+  }
+
+  /*
+   * Cloudflare renders into an iframe of its own size. Reserving the height
+   * stops the button jumping down the moment the widget appears.
+   */
+  .turnstile {
+    min-height: 65px;
+  }
+
+  /* ------------------------------------------------------------- honeypot */
+
+  /*
+   * Off-screen, not hidden. A bot that skips display:none and [hidden] fields
+   * would skip this one too, and then it catches nothing.
+   */
+  .honeypot {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* -------------------------------------------------------------- success */
+
+  .sent {
+    gap: var(--space-2);
+    padding: var(--space-6);
+    background: var(--surface-raised);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-2);
+  }
+
+  .sentHeading {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: var(--leading-heading);
+    color: var(--text-primary);
+  }
+
+  .sentBody {
+    margin: 0;
+    font-size: var(--text-md);
+    line-height: var(--leading-body);
+    color: var(--text-secondary);
+  }
+}

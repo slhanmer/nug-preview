@@ -1,0 +1,364 @@
+/*
+ * Noir chrome.
+ *
+ * For a venue that is sold on how it LOOKS: a dim room, a bar, a chef's
+ * counter, a bottle list. The other skins are built to move somebody toward an
+ * action or through a sentence; this one is built so the photographs have
+ * somewhere to sit, which mostly means giving them a great deal of nothing to
+ * sit in.
+ *
+ * Three rules hold the whole thing together:
+ *   1. ONE bright thing per screen, and everything else is close to the ground.
+ *   2. Photographs dissolve into the page rather than sitting on it — see the
+ *      mask fades in sections.module.css. A near-black photograph on a
+ *      near-black page only looks expensive if you cannot find its edges.
+ *   3. Type is small, tracked out, and there is not much of it.
+ *
+ * Colour is entirely from the token layer, as always.
+ */
+
+@layer skin {
+  .page {
+    --gutter: clamp(1.5rem, 5vw, 6rem);
+    --measure: min(92vw, 84rem);
+    --column: 32rem;
+    --section: clamp(5rem, 12vw, 10rem);
+
+    --display: var(--display-site, 'Futura', 'Century Gothic', system-ui, sans-serif);
+
+    /*
+     * The wall.
+     *
+     * Fractal noise screened over the ground: one fine grain and TWO coarse
+     * mottles, which together read as rough dark plaster lit from one side —
+     * the surface behind most of this client's photographs.
+     *
+     * Generated rather than photographed ON PURPOSE. The first version lifted a
+     * patch of their actual wall out of a product shot and mirror-tiled it; at
+     * any useful opacity the mirroring read as a kaleidoscope, because stone
+     * has features big enough to recognise. This costs no request, scales to
+     * any viewport, and belongs to the template rather than to one client.
+     *
+     * THREE THINGS HAD TO BE RIGHT, and each was wrong once.
+     *
+     * 1. GAMMA. Screening raw noise over a ground lifts the floor by about half
+     *    the layer's opacity, because the noise averages around mid-grey and
+     *    has almost no black in it. Measured over #000 without gamma: darkest
+     *    pixel 6, mean 16 — so the page could not be black whatever the ground
+     *    was set to, and two attempts at darkening it changed nothing visible.
+     *    Pushing each layer through v -> v^4.2 drags the bulk to zero and keeps
+     *    the peaks, which is also what a lit wall does.
+     *
+     * 2. STITCHING. `feTurbulence` does not wrap at the edges of its own tile,
+     *    so every repeat had a hard seam — a grid of faint lines across the
+     *    page, most visible on the widest screens. `stitchTiles` is the fix and
+     *    the whole fix.
+     *
+     * 3. PERIOD. One 700px mottle repeats twice across an ordinary laptop and
+     *    the eye finds it immediately, seams or no seams. Two mottles at 1100
+     *    and 1490 with different seeds have a combined period far past any
+     *    viewport, so there is nothing to find.
+     *
+     * At --texture 0.14 the page measures darkest 0, mean 8: it genuinely
+     * starts at black and the texture is light added to it in patches. Above
+     * about 0.24 it stops being a surface and starts being a filter; 0 is off.
+     */
+    --texture: 0.085;
+    --grain:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='4.5'/%3E%3CfeFuncG type='gamma' exponent='4.5'/%3E%3CfeFuncB type='gamma' exponent='4.5'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23g)'/%3E%3C/svg%3E");
+    --mottle-a:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cfilter id='a' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.009' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='4.2'/%3E%3CfeFuncG type='gamma' exponent='4.2'/%3E%3CfeFuncB type='gamma' exponent='4.2'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='1100' height='1100' filter='url(%23a)'/%3E%3C/svg%3E");
+    --mottle-b:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1490' height='1490'%3E%3Cfilter id='b' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='gamma' exponent='4.2'/%3E%3CfeFuncG type='gamma' exponent='4.2'/%3E%3CfeFuncB type='gamma' exponent='4.2'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='1490' height='1490' filter='url(%23b)'/%3E%3C/svg%3E");
+
+    position: relative;
+    /*
+     * The stacking context the texture needs. Without it the z-index: -1 below
+     * escapes to the root and paints behind the page background instead of
+     * between the background and the content.
+     */
+    isolation: isolate;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text-primary);
+  }
+
+  /*
+   * Fixed, so the wall stays put and the content moves across it.
+   *
+   * Two elements rather than two background-images on one, because the grain
+   * needs less than half the mottle's opacity and `background-image` has no
+   * per-layer alpha. Both scale off the single dial.
+   */
+  .page::before,
+  .page::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /*
+   * The masthead carries the SAME wall, clipped to itself.
+   *
+   * `position: absolute` so it stops at the bar, but `background-attachment:
+   * fixed` so the noise is positioned against the viewport — which is where the
+   * page's own layers are, since those are on a fixed element. Without that the
+   * bar would tile its own copy from its own origin and the join would show as
+   * a seam across the top of every page.
+   */
+  .masthead::before,
+  .masthead::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-attachment: fixed;
+    mix-blend-mode: screen;
+  }
+
+  .page::before,
+  .masthead::before {
+    background-image: var(--grain);
+    opacity: calc(var(--texture) * 0.45);
+  }
+
+  /*
+   * Both mottles on one element, screened against each other by
+   * `background-blend-mode` — an element has only two pseudo-elements and
+   * stacked background-images otherwise just cover one another.
+   */
+  .page::after,
+  .masthead::after {
+    background-image: var(--mottle-a), var(--mottle-b);
+    background-blend-mode: screen;
+    opacity: var(--texture);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ------------------------------------------------------------- masthead */
+
+  /*
+   * The same black as the page, not a tinted pane over it.
+   *
+   * This was a translucent bar with a backdrop blur — the standard treatment,
+   * and wrong here for the same reason the texture was: it is a strip that is
+   * measurably lighter than everything around it, sitting across the top of a
+   * page whose entire argument is that it is black. The blur is doing craft
+   * nobody asked for. Opaque ground, the same wall, one hairline.
+   */
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding-block: 0.9rem;
+    background: var(--ground);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .masthead .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+  }
+
+  .brandMark {
+    display: block;
+    height: 1.55rem;
+    width: auto;
+  }
+
+  /*
+   * The katakana, and it is set at the tracking the lockup uses rather than the
+   * tracking the rest of the page uses. It is part of the mark, not a caption.
+   */
+  .brandSub {
+    font-size: 0.625rem;
+    letter-spacing: 0.4em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  @media (width < 44rem) {
+    .brandSub {
+      display: none;
+    }
+  }
+
+  .brandName {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2.25rem);
+  }
+
+  .navLink {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .navLink:hover {
+    color: var(--text-primary);
+  }
+
+  @media (width < 40rem) {
+    /* The CTA survives, the rest goes to the footer — a wrapped nav under a
+       hero is the one thing that would break the opening. */
+    .navLink {
+      display: none;
+    }
+  }
+
+  .navCta {
+    background: var(--action);
+    color: var(--on-action);
+    text-decoration: none;
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+  }
+
+  .navCta:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+  }
+
+  .navCta:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  /* ----------------------------------------------------------------- main */
+
+  /* The element, not a class — PageBySlug renders a bare <main>. */
+  .page > main {
+    flex: 1;
+  }
+
+  /* --------------------------------------------------------------- footer */
+
+  /*
+   * No top margin. Every page here ends on a cta, which already carries a
+   * rule and most of a screen of padding — adding a section gap on top of that
+   * left a dead band between the button and the colophon big enough to look
+   * like the page had failed to load something.
+   */
+  .footer {
+    padding-block: clamp(3.5rem, 8vw, 6rem) 2.5rem;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .footerTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .footerMark {
+    display: block;
+    height: clamp(2rem, 4vw, 3rem);
+    width: auto;
+  }
+
+  .footerSub {
+    margin: 0.9rem 0 0;
+    font-size: 0.6875rem;
+    letter-spacing: 0.45em;
+    color: var(--text-muted);
+  }
+
+  .footerName {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .footerTagline {
+    margin: 0;
+    max-width: 30rem;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 2rem clamp(1.5rem, 4vw, 3rem);
+    margin-block-start: clamp(3rem, 6vw, 4.5rem);
+    padding-block-start: clamp(2rem, 4vw, 3rem);
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .factLabel {
+    margin: 0 0 0.75rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .factValue {
+    margin: 0 0 0.35rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .factValue a {
+    color: inherit;
+    text-decoration: none;
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .factValue a:hover {
+    color: var(--text-primary);
+    border-block-end-color: currentColor;
+  }
+
+  .colophon {
+    margin-block-start: clamp(2.5rem, 5vw, 4rem);
+    color: var(--text-muted);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+  }
+}

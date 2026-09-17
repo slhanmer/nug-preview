@@ -1,0 +1,68 @@
+{
+  "name": "nug-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "new": "node scripts/new-demo.mjs",
+    "use": "node scripts/use-demo.mjs",
+    "seed": "node scripts/seed.mjs",
+    "eject": "node scripts/eject.mjs",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "skin:check": "vitest run --project unit src/skins/skins.test.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "^3.88.0",
+    "@payloadcms/next": "^3.88.0",
+    "@payloadcms/richtext-lexical": "^3.88.0",
+    "@vitest/browser-playwright": "^4.1.11",
+    "next": "16.3.3",
+    "payload": "^3.88.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "@storybook/nextjs-vite": "^10.5.10",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/browser": "^4.1.11",
+    "culori": "^4.0.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "eslint-plugin-storybook": "^10.5.10",
+    "jsdom": "^30.0.1",
+    "playwright": "^1.62.1",
+    "prettier": "^3.9.6",
+    "simple-git-hooks": "^2.14.0",
+    "storybook": "^10.5.10",
+    "typescript": "^5",
+    "vite": "^8.2.2",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.11"
+  },
+  "packageManager": "pnpm@10.18.2",
+  "pnpm": {
+    "patchedDependencies": {
+      "@payloadcms/drizzle": "patches/@payloadcms__drizzle.patch"
+    }
+  }
+}

@@ -1,0 +1,661 @@
+/*
+ * Venue section renderers.
+ *
+ * The room this skin draws is a counter you queue at, not a dining room you
+ * sit in: photography large and square-ish, type set tight, one measure for
+ * everything that is words. Colour is entirely from the token layer — the
+ * contrast contract is only a guarantee while that stays true.
+ */
+
+@layer skin {
+  /*
+   * Rhythm lives here, not in the chrome.
+   *
+   * Half of --section at each end, so the gap BETWEEN two sections is one full
+   * --section and the gap at the top and bottom of the page is half of one.
+   * Without this the sections butt straight up against each other and a
+   * gallery heading ends up touching the image above it.
+   *
+   * A section that paints its own band (.cta) overrides this below.
+   */
+  .section {
+    padding-inline: var(--gutter);
+    padding-block: calc(var(--section) / 2);
+  }
+
+  /*
+   * Both sit inside .wide, so a column of prose shares its left edge with the
+   * hero rather than centring itself independently on the page. Two centred
+   * measures on one page read as a mistake even when both are deliberate.
+   */
+  /*
+   * Centred, not left.
+   *
+   * This used to sit hard left so a column of prose shared the hero's left
+   * edge. That reasoning stopped holding once the menu module arrived: the menu
+   * centres itself, so prose, faq and contact were the only things on the page
+   * still starting at the left margin, and the contact form looked like it had
+   * come loose.
+   */
+  .text {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+
+  .centred {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+
+  .wide {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+
+  /* The hero eyebrow used to sit on a photograph and needed lifting off it.
+     It sits on --ground now like every other one, so it can go back. */
+
+  .heading {
+    font-family: var(--display);
+    font-weight: 400;
+    line-height: var(--display-leading, 1.06);
+    letter-spacing: var(--display-tracking, -0.01em);
+    margin: 0;
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  .body p {
+    line-height: 1.7;
+    margin: 0 0 1.1em;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* -------------------------------------------------------------- actions */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 2rem;
+  }
+
+  .primary,
+  .secondary {
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.5rem;
+    border: 1px solid transparent;
+  }
+
+  /*
+   * The action colour, with an edge, and the edge is not decoration.
+   *
+   * A client's action colour and their ground can land at the same lightness —
+   * Fieldy's deep green on charcoal measures 1.02:1 against the page. The
+   * label still clears 11:1, so the button is readable, but its SHAPE is
+   * carried by hue alone, and hue is the one cue that cannot be relied on. A
+   * hairline in the label's own colour gives the boundary something to be.
+   *
+   * Costs nothing on a site whose action already contrasts with the page: the
+   * line is the label colour at a quarter strength and reads as a rim.
+   */
+  .primary {
+    background: var(--action);
+    color: var(--on-action);
+    border-color: color-mix(in oklab, var(--on-action) 28%, transparent);
+  }
+
+  .primary:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+    border-color: color-mix(in oklab, var(--on-action-hover) 55%, transparent);
+  }
+
+  .primary:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  .secondary {
+    border-color: var(--edge-control);
+    color: var(--text-primary);
+  }
+
+  .secondary:hover {
+    border-color: var(--text-primary);
+  }
+
+  /* ----------------------------------------------------------------- hero */
+
+  /*
+   * Full bleed, and the reason it was not.
+   *
+   * `.heroImage` is `position: absolute; inset: 0`, which resolves against the
+   * PADDING box — so the gutter `.section` puts on every section was insetting
+   * the photograph itself and leaving a strip of ground either side. The hero
+   * is the one section whose background must reach the edge of the screen, so
+   * it takes no padding at all and `.heroInner` carries the gutter instead.
+   */
+  .hero {
+    position: relative;
+    padding-inline: 0;
+    padding-block: 0;
+    min-height: min(46rem, 88svh);
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    /*
+     * Pulled up under the sticky header so the photograph starts at the top of
+     * the viewport and the header floats on it. The header's own translucency
+     * is what keeps the nav readable.
+     */
+    margin-block-start: calc(var(--header-h) * -1) !important;
+  }
+
+  .heroImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ------------------------------------------------------- hero: split */
+
+  /*
+   * Type one side, photograph the other, and the photograph stays square.
+   *
+   * The showcase hero crops to a band and scales to the full width of the
+   * screen, which is the right treatment for a wide, sharp landscape shot and
+   * the wrong one for everything a small business actually owns. At half the
+   * width in its own frame the same file is used at or under its native size.
+   *
+   * Square rather than the service skin's 4:5 because this skin's photographs
+   * come off a grid — the crop that makes a camera roll look deliberate is the
+   * one the camera roll is already in.
+   *
+   * Not pulled under the header either: there is no photograph behind the nav
+   * to justify it, and a translucent header over ground is just a seam.
+   */
+  .heroSplit {
+    padding-block: clamp(2.5rem, 7vw, 5.5rem);
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .heroSplitInner {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  @media (width >= 54rem) {
+    .heroSplitInner {
+      /* Words wider than the picture. The picture corroborates the sentence;
+         it is not the other way round. */
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  .heroSplitMedia {
+    margin: 0;
+  }
+
+  .heroSplitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: max(var(--radius, 0rem), 0.75rem);
+  }
+
+  /* -------------------------------------------------------- hero: mark */
+
+  /*
+   * The photograph gets the full width and carries nothing at all, and the
+   * type sits in a band underneath — so there is no contrast judgement
+   * anywhere in the hero rather than a measured one.
+   */
+  .heroMark {
+    padding-inline: 0;
+    padding-block: 0;
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+    margin-block-start: calc(var(--header-h) * -1) !important;
+  }
+
+  .heroMarkMedia img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 5 / 2;
+    /* The cap, not the ratio, is what stops a wide monitor getting a hero
+       nothing can scroll past. */
+    max-block-size: min(62vh, 38rem);
+    object-fit: cover;
+  }
+
+  @media (width < 48rem) {
+    .heroMarkMedia img {
+      aspect-ratio: 5 / 4;
+    }
+  }
+
+  .heroMarkWords {
+    padding-inline: var(--gutter);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  /* ------------------------------------------------------- hero: plain */
+
+  /* When the only photograph available is worse than none. */
+  .heroPlain {
+    padding-block: clamp(3rem, 8vw, 6rem);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  /*
+   * The panel the words sit on. There is no scrim any more.
+   *
+   * A gradient strong enough to guarantee the type washed the photograph out;
+   * one soft enough to leave the photograph alone could not hold the type. No
+   * value between those two is good, because contrast over an image cannot be
+   * measured — the ladder cannot see a picture. Text on --ground can be
+   * measured, and everything else in the system already depends on that.
+   *
+   * Square and unbordered, which is how this skin differs from service's:
+   * service boxes it with an edge and a radius, this one just puts a block of
+   * paper on the photograph. With no photograph it dissolves into the page,
+   * which is the right behaviour rather than a fallback.
+   */
+  .heroCard {
+    /*
+     * The two dials, and they fight each other.
+     *
+     * A heavy blur destroys the detail it is blurring, so a panel at 70% over
+     * a 22px blur reads as flat grey — the photograph is technically coming
+     * through and there is nothing left of it to see. Turning the opacity up
+     * from there changes almost nothing, because the thing being hidden was
+     * already gone. That is why this looked solid at every value.
+     *
+     * Less blur, more transparency. Enough of the picture survives to read as
+     * a panel laid ON something rather than a grey box, and the type still has
+     * three quarters of --ground under it.
+     *
+     * Nudge these two together, not separately: more blur wants more
+     * transparency to stay legible as glass, and less blur wants less.
+     */
+    background: color-mix(in oklab, var(--ground) 78%, transparent);
+    backdrop-filter: blur(3px) saturate(1.1);
+
+    /*
+     * A floor under the shape token. --radius is sized for buttons and inputs;
+     * on a panel this big a control's radius reads as an accident rather than
+     * a decision. A site that asks for more still gets more.
+     *
+     * The fallback inside the var() is load-bearing: `max(var(--radius), …)`
+     * with --radius unset is an INVALID value, so the whole declaration gets
+     * dropped and the corners stay square with nothing in the console to say
+     * why. Cost a round trip.
+     */
+    border-radius: max(var(--radius, 0rem), 0.75rem);
+
+    padding: clamp(1.75rem, 4vw, 3rem);
+    max-width: 42rem;
+  }
+
+  /* No blur, no translucency — otherwise the type is sitting on a photograph
+     with nothing between them, which is the thing this panel exists to stop. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .heroCard {
+      background: var(--ground);
+    }
+  }
+
+  /* Same geometry as chrome's .inner, so the hero heading and the header logo
+     share a left edge. Wins over .wide on source order, not specificity. */
+  .heroInner {
+    position: relative;
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    padding-inline: var(--gutter);
+    padding-block: calc(var(--header-h) + 3rem) clamp(3rem, 8vh, 6rem);
+  }
+
+  /* Smaller than it was: the type is inside a 42rem panel now rather than
+     running the full width of a photograph. */
+  .heroHeading {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+    max-width: 16ch;
+  }
+
+  .heroSub {
+    max-width: 46ch;
+    margin: 1.25rem 0 0;
+  }
+
+  /* ----------------------------------------------------------- mediaSplit */
+
+  .split {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  @media (width >= 52rem) {
+    .split {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .splitRight .splitMedia {
+      order: 2;
+    }
+  }
+
+  .splitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+  }
+
+  .splitHeading {
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    margin-block-end: 1.25rem;
+  }
+
+  /* ----------------------------------------------------------- featureGrid */
+
+  /*
+   * The accent's only route into this skin.
+   *
+   * Nothing here referenced `--swatch-accent` or `--fill-alt` at all, so a
+   * client's second colour reached the page nowhere: `--emphasis` resolves to
+   * `--fill`, and on a light ground `--fill` is always the DARKER of the two
+   * supplied colours. A palette of ink plus one bright colour therefore
+   * rendered as ink and nothing else, however bright the bright one was.
+   *
+   * A rule, never text — `--swatch-accent` is the client's colour untouched
+   * and the one role exempt from the contrast contract, so it is only safe
+   * where nothing is being read. So What's orange measures 2.7:1 on its own
+   * ground; as a heading it would fail, as a rule it cannot.
+   *
+   * Deliberately not service's treatment. Service puts a short bar ABOVE the
+   * head; this is a rule UNDER it, running the head's full width, which is
+   * this skin's editorial idiom and keeps the two from converging.
+   */
+  .gridHead {
+    max-width: 46rem;
+    margin-block-end: clamp(2rem, 4vw, 3.5rem);
+    padding-block-end: clamp(1rem, 2vw, 1.5rem);
+    border-block-end: 2px solid var(--swatch-accent);
+  }
+
+  .gridHeading {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  }
+
+  /* Geometry moved to components/layout — the block chooses its arrangement. */
+
+  .card {
+    border-block-start: 1px solid var(--edge-strong);
+    padding-block-start: 1.25rem;
+  }
+
+  .cardTitle {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.375rem;
+    margin: 0 0 0.6rem;
+  }
+
+  .cardBody {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* -------------------------------------------------------------- gallery */
+
+  /*
+   * No frame. This skin's whole argument is that the photograph is the
+   * content — a border and a radius around it say "thumbnail", which is the
+   * opposite. The generous gutter is what separates them instead.
+   */
+  .shot {
+    margin: 0;
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    /* Set per block by the renderer; `auto` is the "as shot" case. */
+    aspect-ratio: var(--shot-aspect, 1 / 1);
+    object-fit: cover;
+  }
+
+  .shotCaption {
+    margin-block-start: 0.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .gallery {
+    scroll-padding-inline: var(--gutter);
+  }
+
+  /*
+   * The mosaic case. See the note in the renderer for why the ratio goes.
+   *
+   * A band rather than a ratio: every row is the same height and the spans
+   * vary the width, which is what makes six square Instagram grabs read as one
+   * composed set instead of six squares of different sizes.
+   */
+  .galleryBento .shot {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+  }
+
+  /*
+   * A DEFINITE height, not a minimum, and that distinction was the whole bug.
+   *
+   * `block-size: 100%` on a figure inside an auto-sized grid row resolves
+   * against an indefinite height, so it behaves as auto — and with the ratio
+   * removed the photograph then fell back to its own intrinsic shape at the
+   * full width of its cell. A span-4 cell is most of the page, so the picture
+   * was rendered most of the page tall. A minimum could never have capped it.
+   */
+  .galleryBento .shot img {
+    aspect-ratio: auto;
+    flex: 0 0 auto;
+    inline-size: 100%;
+    block-size: clamp(6rem, 11vw, 10rem);
+    object-fit: cover;
+    border-radius: max(var(--radius, 0rem), 0.5rem);
+  }
+
+  /* ---------------------------------------------------------------- quote */
+
+  .quote {
+    text-align: center;
+  }
+
+  /*
+   * A real pair, drawn by CSS rather than typed into the content.
+   *
+   * `quotes` plus open-quote/close-quote means the two marks are one decision:
+   * they cannot get out of step, they nest correctly, and an editor writing a
+   * quotation in the admin never has to remember to add them — nor can they
+   * end up doubled when someone does.
+   */
+  .quoteText {
+    font-family: var(--display);
+    font-size: clamp(1.5rem, 3.4vw, 2.35rem);
+    line-height: 1.3;
+    margin: 0;
+    text-wrap: balance;
+    quotes: '\201C' '\201D' '\2018' '\2019';
+  }
+
+  .quoteText::before {
+    content: open-quote;
+  }
+
+  .quoteText::after {
+    content: close-quote;
+  }
+
+  .quoteAttr {
+    margin: 1.75rem 0 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ------------------------------------------------------------ logoStrip */
+
+  .strip {
+    text-align: center;
+  }
+
+  .stripHeading {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 2rem;
+  }
+
+  .stripItems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 5vw, 4rem);
+  }
+
+  .stripItems img {
+    display: block;
+    height: clamp(2.5rem, 6vw, 3.75rem);
+    width: auto;
+    opacity: 0.75;
+  }
+
+  .stripItems a:hover img {
+    opacity: 1;
+  }
+
+  /* ------------------------------------------------------------------ faq */
+
+  .faqHeading {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    margin-block-end: 2rem;
+  }
+
+  .faqItem {
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .faqItem:last-of-type {
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .faqQuestion {
+    cursor: pointer;
+    list-style: none;
+    padding-block: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5rem;
+    font-size: 1.0625rem;
+  }
+
+  .faqQuestion::-webkit-details-marker {
+    display: none;
+  }
+
+  .faqQuestion::after {
+    content: '+';
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .faqItem[open] .faqQuestion::after {
+    content: '−';
+  }
+
+  .faqAnswer {
+    padding-block-end: 1.4rem;
+    color: var(--text-secondary);
+    max-width: 60ch;
+  }
+
+  /* ------------------------------------------------------------------ cta */
+
+  .cta {
+    background: var(--surface);
+    border-block: 1px solid var(--edge);
+    padding-block: clamp(3rem, 7vw, 5.5rem);
+    text-align: center;
+  }
+
+  .ctaHeading {
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    text-wrap: balance;
+  }
+
+  .ctaBody {
+    margin: 1rem auto 0;
+    max-width: 44ch;
+  }
+
+  .cta .actions {
+    justify-content: center;
+  }
+
+  /* -------------------------------------------------------------- contact */
+
+  .contactHeading {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  }
+
+  .contactBody {
+    margin-block-start: 1rem;
+  }
+
+  /*
+   * The skin's whole say over the shared form: where it sits and how wide.
+   * Never what is inside it — that is src/features/contact/contact-form.module.css,
+   * and reaching into it from here breaks every skin at once. Same rule as the kit.
+   */
+  .contactForm {
+    margin-block-start: 2rem;
+  }
+}

@@ -1,0 +1,431 @@
+/*
+ * Token layer.
+ *
+ * Per ADR 0001 (as revised): brand colours AND the page ground are inputs.
+ * Functional roles are derived by stepping AWAY FROM THE GROUND, in whichever
+ * direction the ground implies. Contrast is enforced by measurement.
+ *
+ * The earlier version pinned the ground to a near-white neutral. That was
+ * wrong, and simonhanmer.com.au is the proof — a deep aubergine ground and a
+ * pale sage ground, both WCAG 2.2 compliant. Compliance came from measuring,
+ * not from keeping the background boring. A system that cannot express its
+ * author's own site cannot express a client's.
+ */
+
+@layer tokens {
+  /*
+   * Declared on a scoping selector, not :root alone.
+   *
+   * Custom property substitution happens where the property is DECLARED, so
+   * derivation on :root alone cannot be re-run further down the tree. Any
+   * element carrying data-tokens re-derives the whole palette from its own
+   * inputs — which is what allows three skins side by side.
+   */
+  :root,
+  [data-tokens] {
+    /* ---------------------------------------------------------------
+     * INPUTS — read off the client's brand by site.config.ts.
+     * ------------------------------------------------------------- */
+
+    /*
+     * TWO grounds, not one. A site has a light theme and a dark theme, and the
+     * active theme is simply which ground is live. Because the ladder below is
+     * expressed as distance FROM the ground, both themes come out of one set of
+     * numbers — there is no second ladder to maintain.
+     */
+    --ground-light-l: 0.985;
+    --ground-light-c: 0.004;
+    --ground-light-h: 265;
+
+    --ground-dark-l: 0.24;
+    --ground-dark-c: 0.03;
+    --ground-dark-h: 265;
+
+    /* Light is the default. Overridden below by preference or by data-theme. */
+    --ground-l: var(--ground-light-l);
+    --ground-c: var(--ground-light-c);
+    --ground-h: var(--ground-light-h);
+
+    --brand-l: 0.52;
+    --brand-c: 0.15;
+    --brand-h: 265;
+
+    --accent-l: 0.52;
+    --accent-c: 0.14;
+    --accent-h: 45;
+
+
+    /* ---------------------------------------------------------------
+     * DIRECTION OF TRAVEL.
+     *
+     * -1 when the ground is light, so roles step darker.
+     * +1 when the ground is dark, so roles step lighter.
+     *
+     * The multiplier makes it a hard switch rather than a ramp. This single
+     * value is what makes light and dark themes the same system rather than
+     * two hand-maintained ladders.
+     * ------------------------------------------------------------- */
+    --step: clamp(-1, calc((0.5 - var(--ground-l)) * 1000), 1);
+
+    /* ---------------------------------------------------------------
+     * DISTANCES — how far each role sits from the ground.
+     * These are the ladder. Role names are the contract, the numbers
+     * belong to the system, and they are tuned against measured
+     * contrast rather than chosen by eye.
+     * ------------------------------------------------------------- */
+    --d-surface: 0.02;
+    --d-surface-raised: -0.015;
+    /*
+     * Recessed steps in the SAME direction as text, so it sits closer to the
+     * text lightness than any other surface and is structurally the tightest
+     * pair in the contract. Kept small for that reason.
+     */
+    --d-surface-recessed: 0.04;
+
+    --d-edge: 0.12;
+    --d-edge-strong: 0.22;
+    --d-edge-control: 0.4;
+
+    --d-text-muted: 0.42;
+    --d-text-secondary: 0.5;
+    --d-text-primary: 0.72;
+
+    /* Chroma per role. System-owned — chroma is where accessibility dies. */
+    --c-surface: var(--ground-c);
+    --c-edge: 0.012;
+    --c-text: 0.014;
+
+    /*
+     * Above this lightness a fill takes a black label, below it a white one.
+     *
+     * NOT a guess. The crossover is where white-on-fill and black-on-fill give
+     * the same WCAG ratio:
+     *
+     *   1.05 / (Y + 0.05) = (Y + 0.05) / 0.05   ->   Y ~= 0.179
+     *
+     * which is around OKLCH lightness 0.55 for a neutral. An earlier value of
+     * 0.68 handed a white label to every fill between 0.55 and 0.68, where a
+     * black one was better — measured at 3.17:1 on a mid tan.
+     *
+     * The ratio AT the crossover is 4.58, above the 4.5 bar. So with pure black
+     * and pure white as the two labels there is no unusable band: every fill
+     * can carry a legible label, provided this picks the right one. Softening
+     * the label away from pure black would reintroduce one.
+     *
+     * Hue and chroma shift the true crossover by a few points either way, which
+     * is why the contract is measured rather than trusted.
+     */
+    --polarity-threshold: 0.55;
+
+    /* ---------------------------------------------------------------
+     * DERIVED ROLES. Components consume only these.
+     * ------------------------------------------------------------- */
+    --l-surface: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-surface)), 1);
+    --l-surface-raised: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-surface-raised)), 1);
+    --l-surface-recessed: clamp(
+      0,
+      calc(var(--ground-l) + var(--step) * var(--d-surface-recessed)),
+      1
+    );
+    --l-edge: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-edge)), 1);
+    --l-edge-strong: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-edge-strong)), 1);
+    --l-edge-control: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-edge-control)), 1);
+    --l-text-muted: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-text-muted)), 1);
+    --l-text-secondary: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-text-secondary)), 1);
+    --l-text-primary: clamp(0, calc(var(--ground-l) + var(--step) * var(--d-text-primary)), 1);
+
+    --ground: oklch(var(--ground-l) var(--ground-c) var(--ground-h));
+    --surface: oklch(var(--l-surface) var(--c-surface) var(--ground-h));
+    --surface-raised: oklch(var(--l-surface-raised) var(--c-surface) var(--ground-h));
+    --surface-recessed: oklch(var(--l-surface-recessed) var(--c-surface) var(--ground-h));
+
+    --edge: oklch(var(--l-edge) var(--c-edge) var(--ground-h));
+    --edge-strong: oklch(var(--l-edge-strong) var(--c-edge) var(--ground-h));
+    --edge-control: oklch(var(--l-edge-control) var(--c-edge) var(--ground-h));
+
+    --text-primary: oklch(var(--l-text-primary) var(--c-text) var(--ground-h));
+    --text-secondary: oklch(var(--l-text-secondary) var(--c-text) var(--ground-h));
+    --text-muted: oklch(var(--l-text-muted) var(--c-text) var(--ground-h));
+
+    /* ---------------------------------------------------------------
+     * SELECTION — which of the two supplied colours suits this ground.
+     *
+     * Rather than dragging one hue's lightness across the ladder — which turns
+     * a chartreuse into an olive and stops it being the brand — the system
+     * PICKS whichever supplied colour suits the current ground and uses it
+     * untouched. A brand palette almost always holds one light colour and one
+     * dark one, because it has to work on both.
+     *
+     * Light ground takes the darker. Dark ground takes the lighter. Both
+     * switches are hard 0/1, so the calcs below are a SELECTION, not a blend —
+     * no hue is ever interpolated and you never get a mix of the two.
+     * ------------------------------------------------------------- */
+    --accent-is-lighter: clamp(0, calc((var(--accent-l) - var(--brand-l)) * 1000), 1);
+    --is-dark: clamp(0, var(--step), 1);
+    --use-accent: calc(
+      var(--is-dark) * var(--accent-is-lighter) + (1 - var(--is-dark)) *
+        (1 - var(--accent-is-lighter))
+    );
+    --u: var(--use-accent);
+
+    /* The chosen colour. */
+    --fill-l: calc(var(--u) * var(--accent-l) + (1 - var(--u)) * var(--brand-l));
+    --fill-c: calc(var(--u) * var(--accent-c) + (1 - var(--u)) * var(--brand-c));
+    --fill-h: calc(var(--u) * var(--accent-h) + (1 - var(--u)) * var(--brand-h));
+
+    /* The other one. */
+    --alt-l: calc(var(--u) * var(--brand-l) + (1 - var(--u)) * var(--accent-l));
+    --alt-c: calc(var(--u) * var(--brand-c) + (1 - var(--u)) * var(--accent-c));
+    --alt-h: calc(var(--u) * var(--brand-h) + (1 - var(--u)) * var(--accent-h));
+
+    --fill: oklch(var(--fill-l) var(--fill-c) var(--fill-h));
+    --fill-hover: oklch(from var(--fill) calc(l + var(--step) * 0.06) c h);
+    --fill-active: oklch(from var(--fill) calc(l + var(--step) * 0.12) c h);
+    --fill-alt: oklch(var(--alt-l) var(--alt-c) var(--alt-h));
+
+    /*
+     * No third colour supplied: the action IS the fill.
+     *
+     * Declared here rather than beside the other inputs because it has to
+     * resolve against the SELECTED fill, which does not exist until the lines
+     * above have run. Falling back to the accent instead — the first version
+     * of this — quietly gave every two-colour site a second button colour it
+     * had never asked for.
+     */
+    --third-l: var(--fill-l);
+    --third-c: var(--fill-c);
+    --third-h: var(--fill-h);
+
+    /* Same colour, different duty: links and emphasised words. */
+    --emphasis: var(--fill);
+
+    /* Automatic label polarity — a pale fill gets a dark label. */
+    /*
+     * Polarity is decided PER STATE, not once from the resting fill. Hover and
+     * active change the fill's lightness, and a label that does not re-decide
+     * gets progressively more wrong the more the user interacts with it —
+     * measured at 2.03:1 on a pressed button before this was split out.
+     */
+    --on-fill: oklch(
+      from var(--fill) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-fill-hover: oklch(
+      from var(--fill-hover) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-fill-active: oklch(
+      from var(--fill-active) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-fill-alt: oklch(
+      from var(--fill-alt) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+
+    /* ---------------------------------------------------------------
+     * ACTION — the third colour as a filled control.
+     *
+     * The ladder SELECTS between two colours, so a client's third could only
+     * ever be drawn, never typed on, and a business whose call-to-action
+     * colour is its third had nowhere to put it. This runs the third through
+     * the same polarity machinery as the fill, which is what makes it
+     * measurable rather than decorative — it is in the contract, and a third
+     * that cannot carry a label fails the build.
+     *
+     * Falls back to the accent when no third is supplied, so `--action` is
+     * always a real colour and a skin need not branch on whether one exists.
+     * ------------------------------------------------------------- */
+    --action: oklch(var(--third-l) var(--third-c) var(--third-h));
+    --action-hover: oklch(from var(--action) calc(l + var(--step) * 0.06) c h);
+    --action-active: oklch(from var(--action) calc(l + var(--step) * 0.12) c h);
+
+    --on-action: oklch(
+      from var(--action) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-action-hover: oklch(
+      from var(--action-hover) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-action-active: oklch(
+      from var(--action-active) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+
+    /*
+     * Focus ring steps off the GROUND rather than the brand, so it cannot
+     * disappear into a pale brand or a dark one. A focus ring below 3:1 makes
+     * the site unusable by keyboard.
+     */
+    --focus-ring: oklch(
+      clamp(0, calc(var(--ground-l) + var(--step) * 0.45), 1) var(--fill-c) var(--fill-h)
+    );
+
+    /* The client's colours verbatim, where contrast is not at stake. */
+    --swatch-brand: oklch(var(--brand-l) var(--brand-c) var(--brand-h));
+    --swatch-accent: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+    --swatch-third: oklch(var(--third-l) var(--third-c) var(--third-h));
+
+    /* ---------------------------------------------------------------
+     * POP — a decorative wheel spun off the brand.
+     *
+     * For an identity whose device is SEVERAL colours at once: a mascot on a
+     * different coloured disc every post, a row of cards that is not one colour
+     * but five. The obvious way to get those five is to eyedropper a
+     * photograph, and then the palette belongs to somebody's stock and changes
+     * when the photograph does. These are the brand's own hue rotated at one
+     * fixed lightness and chroma, so they cannot clash with it and they move
+     * when it moves.
+     *
+     * Spun off --alt-h rather than the fill, because on a light ground the
+     * ladder selects the DARKER colour as ink — which for a colour-blocked
+     * brand is precisely the colour you would not want a wheel of. The alt is
+     * the loud one.
+     *
+     * DECORATIVE, and the one rule that keeps them safe: nothing may set type
+     * on a pop. They back a picture or they back nothing. Nothing in the
+     * contract measures them, so a pop carrying a label is the only way to get
+     * an unmeasured foreground into this system.
+     *
+     * The lightness is fixed rather than stepped off the ground: these sit
+     * behind cut-out artwork, and artwork drawn for a light disc does not
+     * become artwork for a dark one just because the page went dark.
+     * ------------------------------------------------------------- */
+    --pop-l: 0.82;
+    --pop-c: 0.14;
+    --pop-1: oklch(var(--pop-l) var(--pop-c) var(--alt-h));
+    --pop-2: oklch(var(--pop-l) var(--pop-c) calc(var(--alt-h) + 44));
+    --pop-3: oklch(var(--pop-l) var(--pop-c) calc(var(--alt-h) + 104));
+    --pop-4: oklch(var(--pop-l) var(--pop-c) calc(var(--alt-h) + 176));
+    --pop-5: oklch(var(--pop-l) var(--pop-c) calc(var(--alt-h) - 68));
+
+    /* ---------------------------------------------------------------
+     * SHAPE — type, space and radius.
+     *
+     * Same argument as colour: these are INPUTS with derivations on top,
+     * not a table of fixed values. Until now every skin hard-coded its own
+     * clamps, which meant "the same skin, denser" could only be a fork —
+     * and a fork is where a template business goes to die.
+     *
+     * Four dials do the work:
+     *   --type-base   the body size the whole scale grows from
+     *   --type-ratio  how fast it grows (1.125 tight, 1.333 dramatic)
+     *   --density     multiplies every space step, nothing else
+     *   --radius-base 0 for square, up to whatever reads as soft
+     * ------------------------------------------------------------- */
+
+    --type-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+    --type-ratio: 1.25;
+    --density: 1;
+    --radius-base: 0.375rem;
+
+    /*
+     * Ratio powers by multiplication rather than pow(). pow() is CSS Values 4
+     * and not everywhere yet; a type scale that silently collapses to nothing
+     * on an older browser is not a trade worth making for three lines.
+     */
+    --r1: var(--type-ratio);
+    --r2: calc(var(--r1) * var(--type-ratio));
+    --r3: calc(var(--r2) * var(--type-ratio));
+    --r4: calc(var(--r3) * var(--type-ratio));
+    --r5: calc(var(--r4) * var(--type-ratio));
+    --r6: calc(var(--r5) * var(--type-ratio));
+
+    --text-xs: calc(var(--type-base) / var(--r2));
+    --text-sm: calc(var(--type-base) / var(--r1));
+    --text-md: var(--type-base);
+    --text-lg: calc(var(--type-base) * var(--r1));
+    --text-xl: calc(var(--type-base) * var(--r2));
+    --text-2xl: calc(var(--type-base) * var(--r3));
+    --text-3xl: calc(var(--type-base) * var(--r4));
+    --text-4xl: calc(var(--type-base) * var(--r5));
+    --text-5xl: calc(var(--type-base) * var(--r6));
+
+    /*
+     * Line height tightens as size grows. A display line set at body leading
+     * looks broken, and a body paragraph set at display leading is unreadable
+     * — so it is derived rather than picked per rule.
+     */
+    --leading-tight: 1.08;
+    --leading-heading: 1.2;
+    --leading-body: 1.65;
+
+    /*
+     * One space scale, multiplied by density. `service` runs about 0.85 and
+     * `venue` about 1.15; that single number is most of what makes one feel
+     * brisk and the other unhurried.
+     */
+    --space-unit: 0.25rem;
+    --space-1: calc(var(--space-unit) * 1 * var(--density));
+    --space-2: calc(var(--space-unit) * 2 * var(--density));
+    --space-3: calc(var(--space-unit) * 3 * var(--density));
+    --space-4: calc(var(--space-unit) * 4 * var(--density));
+    --space-6: calc(var(--space-unit) * 6 * var(--density));
+    --space-8: calc(var(--space-unit) * 8 * var(--density));
+    --space-12: calc(var(--space-unit) * 12 * var(--density));
+    --space-16: calc(var(--space-unit) * 16 * var(--density));
+    --space-24: calc(var(--space-unit) * 24 * var(--density));
+
+    /* Fluid, because a section gap that works at 380px is lost at 1600px. */
+    --space-section: clamp(
+      calc(var(--space-12) * var(--density)),
+      calc(6vw * var(--density)),
+      calc(var(--space-24) * var(--density))
+    );
+    --space-gutter: clamp(var(--space-4), 4vw, var(--space-16));
+
+    /* ---------------------------------------------------------------
+     * STATUS LANES.
+     *
+     * Danger and success are not brand colours and must not be selected from
+     * the client's two — a green brand would make a delete button green. They
+     * are fixed hues taking the ground's own lightness relationship, so they
+     * stay legible on either theme without being configurable.
+     *
+     * Label polarity uses the same threshold as the brand fills, so a status
+     * button is measured by the same contract as every other one.
+     * ------------------------------------------------------------- */
+    --status-c: 0.14;
+    --status-l: clamp(0, calc(var(--ground-l) + var(--step) * 0.42), 1);
+
+    --danger: oklch(var(--status-l) var(--status-c) 27);
+    --success: oklch(var(--status-l) calc(var(--status-c) * 0.85) 148);
+
+    --on-danger: oklch(
+      from var(--danger) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+    --on-success: oklch(
+      from var(--success) clamp(0, calc((var(--polarity-threshold) - l) * 1000), 1) 0 h
+    );
+
+    --radius-0: 0;
+    --radius-1: calc(var(--radius-base) * 0.5);
+    --radius-2: var(--radius-base);
+    --radius-3: calc(var(--radius-base) * 2);
+    --radius-full: 999rem;
+  }
+
+  /*
+   * Theme selection. Higher specificity than the base rule above, so these win.
+   * An explicit data-theme always beats the OS preference, in both directions.
+   */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']),
+    [data-tokens]:not([data-theme='light']) {
+      --ground-l: var(--ground-dark-l);
+      --ground-c: var(--ground-dark-c);
+      --ground-h: var(--ground-dark-h);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme='dark'],
+  [data-tokens][data-theme='dark'] {
+    --ground-l: var(--ground-dark-l);
+    --ground-c: var(--ground-dark-c);
+    --ground-h: var(--ground-dark-h);
+    color-scheme: dark;
+  }
+
+  :root[data-theme='light'],
+  [data-tokens][data-theme='light'] {
+    --ground-l: var(--ground-light-l);
+    --ground-c: var(--ground-light-c);
+    --ground-h: var(--ground-light-h);
+    color-scheme: light;
+  }
+}

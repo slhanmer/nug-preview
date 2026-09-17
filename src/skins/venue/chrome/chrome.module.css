@@ -1,0 +1,319 @@
+/*
+ * Venue chrome.
+ *
+ * The room this skin is for is dark, narrow and slow. Everything here follows
+ * from that: a header that gets out of the way of the photograph, one column
+ * of generous vertical space, and type with real distance between the display
+ * face and the body.
+ *
+ * Colour is entirely from the token layer. The spacing and type scale is
+ * declared locally because no such tokens exist yet — when a second skin needs
+ * them, whatever the two agree on gets promoted into tokens.css.
+ */
+
+@layer skin {
+  .page {
+    --gutter: clamp(1.25rem, 5vw, 4rem);
+    /*
+     * The page's working width — a proportion with a cap, not a fixed number.
+     *
+     * Prose keeps its own reading measure (`.text`, 46rem); this is how much
+     * page there is, and the two answer different questions.
+     *
+     * 84rem is 1344px and never more, so the wider the screen the more of it
+     * is margin — at which point the page stops looking measured and starts
+     * looking narrow. 92vw keeps the margin proportional; the rem value is
+     * still there as the ceiling, so it cannot sprawl on a 5K display.
+     */
+    --measure: min(92vw, 96rem);
+    --section: clamp(3.5rem, 9vw, 7.5rem);
+    /* Raised from 4.25rem to give a logo somewhere to be. See .brandMark. */
+    --header-h: 4.75rem;
+
+    /*
+     * The skin's stack is the DEFAULT, not the value. A site naming a display
+     * face in its config sets `--display-site` on <html>; this reads through to
+     * it and falls back here when it is unset. Set the other way round the skin
+     * would win, because it is declared further down the tree.
+     */
+    --display: var(--display-site, 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text-primary);
+  }
+
+  /*
+   * Smooth scrolling plus a scroll offset the height of the sticky header.
+   * Without the padding an anchor link lands with its heading underneath the
+   * header, which reads as a broken link rather than a covered one.
+   */
+  .page :global(:target) {
+    scroll-margin-block-start: calc(var(--header-h) + 1rem);
+  }
+
+  /*
+   * Measure PLUS the gutters, deliberately.
+   *
+   * A section is `padding-inline: var(--gutter)` with a `--measure`-wide box
+   * centred inside it, so its content line sits at gutter + the centring
+   * offset. Chrome that is only `--measure` wide lands one gutter narrower
+   * than everything beneath it — the header logo and the hero heading start at
+   * different x, which reads as a wobble rather than as a decision. The calc
+   * makes the two agree at every width.
+   */
+  .inner {
+    width: 100%;
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ---------------------------------------------------------------- header */
+
+  /*
+   * Solid, in the client's action colour, and everything in it is coloured
+   * against THAT rather than against the page.
+   *
+   * Translucent-over-the-hero was the old behaviour and it is the right
+   * default; this is not a default. A mark that is cream artwork on its own
+   * coloured tile — which is most cafe logos, because they were drawn for a
+   * cup — has nowhere to sit on a page that is not that colour: it either
+   * shows its own square or it disappears. A bar in the same colour makes the
+   * tile vanish into it and leaves the artwork, which is what the logo would
+   * look like if it had been supplied with an alpha channel.
+   *
+   * `--action` and `--on-action` are a measured pair, so the nav is legible by
+   * construction. That is the only reason this is allowed to be a slab.
+   */
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
+    background: var(--action);
+    color: var(--on-action);
+    /* Against the page rather than against itself — the bar and the ground can
+       be the same lightness (Fieldy's measures 1.02:1), and then the only
+       thing separating them is this line. */
+    border-block-end: 1px solid color-mix(in oklab, var(--on-action) 24%, transparent);
+  }
+
+  .headerInner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gutter);
+    min-height: var(--header-h);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-family: var(--display);
+    font-size: 1.375rem;
+    letter-spacing: 0.01em;
+    color: var(--on-action);
+    text-decoration: none;
+  }
+
+  /*
+   * Fitted inside a box, not pinned to a height. Same rule as the service
+   * skin, and for the same reason: a fixed height is only right for a square
+   * mark, and most clients have a LOCKUP — type beside a symbol or stacked
+   * under one. Height-constraining a lockup sets the words inside it at a
+   * fraction of that height, which reads as an unreadable logo rather than a
+   * small one.
+   *
+   * Both dimensions auto with both maxima set: a tall mark is limited by the
+   * height, a wide one by the width, neither is ever squashed.
+   */
+  .brandMark {
+    height: auto;
+    width: auto;
+    max-height: 3.25rem;
+    max-width: 13rem;
+    border-radius: var(--radius);
+  }
+
+  /* Separator drawn, not typed, so `descriptor` stays a plain word in config. */
+  .brandDescriptor {
+    font-family: var(--display);
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: color-mix(in oklab, var(--on-action) 80%, transparent);
+  }
+
+  .brandDescriptor::before {
+    content: '·';
+    margin-inline-end: 0.65rem;
+    color: color-mix(in oklab, var(--on-action) 55%, transparent);
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.25rem);
+  }
+
+  .navLink {
+    color: color-mix(in oklab, var(--on-action) 82%, transparent);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding-block: 0.5rem;
+    border-block-end: 1px solid transparent;
+  }
+
+  .navLink:hover {
+    color: var(--on-action);
+    border-block-end-color: currentColor;
+  }
+
+  /*
+   * The one call to action that is NOT the action colour, and it has to be.
+   *
+   * Everywhere else on the page the primary button is `--action`. Here it
+   * would be that colour on a bar of that colour — a button with no edges. So
+   * it inverts against its own band, exactly as the CTA band's button does,
+   * and `--fill` / `--on-fill` are already a measured pair.
+   */
+  .action {
+    background: var(--fill);
+    color: var(--on-fill);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.1rem;
+    border: 1px solid transparent;
+  }
+
+  .action:hover {
+    background: var(--fill-hover);
+    color: var(--on-fill-hover);
+  }
+
+  .action:active {
+    background: var(--fill-active);
+    color: var(--on-fill-active);
+  }
+
+  /*
+   * On a phone: the mark and what the business is, and nothing else.
+   *
+   * The booking button goes, which is the opposite of what this used to do.
+   * The hero's own primary action sits a few hundred pixels below it on the
+   * same screen — two identical buttons one scroll apart are not two chances
+   * at a tap, they are a header wrapping onto two lines to repeat the page.
+   *
+   * Losing it is also what buys the descriptor room to sit on one line, so it
+   * stays: on a mark that spells only the name, "Ristorante · Pizzeria · Caffè"
+   * is the half a stranger actually needs.
+   */
+  @media (width < 40rem) {
+    .nav,
+    .action {
+      display: none;
+    }
+
+    .brandDescriptor {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* ------------------------------------------------------------------ main */
+
+  /*
+   * The element, not a class.
+   *
+   * PageBySlug renders a bare `<main>` — it has never carried `styles.main`,
+   * so every rule here that targeted `.main` silently matched nothing. That is
+   * why the page had no vertical rhythm at all and a gallery heading ended up
+   * touching the image above it: the CSS was written, it just was not wired to
+   * anything. Element selectors are not hashed by CSS Modules, so this binds.
+   *
+   * The rhythm itself now lives on `.section` in sections.module.css — one
+   * mechanism, not two, or the gap doubles.
+   */
+  .page > main {
+    flex: 1;
+  }
+
+  /* ---------------------------------------------------------------- footer */
+
+  .footer {
+    border-block-start: 1px solid var(--edge);
+    background: var(--surface);
+    padding-block: var(--section) 2rem;
+  }
+
+  .footerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .footerName {
+    font-family: var(--display);
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .footerTagline {
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 22rem;
+  }
+
+  .footerHeading {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  .footerList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+    color: var(--text-secondary);
+  }
+
+  .footerList a {
+    color: inherit;
+    text-decoration: none;
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .footerList a:hover {
+    color: var(--text-primary);
+    border-block-end-color: var(--edge-strong);
+  }
+
+  .colophon {
+    margin-block-start: var(--section);
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--edge);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+  }
+}

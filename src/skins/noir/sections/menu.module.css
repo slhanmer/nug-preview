@@ -1,0 +1,168 @@
+/*
+ * Noir menu.
+ *
+ * Two columns of dishes with a leader to the price, set small and tracked out.
+ * A dim-room menu is read on a phone at the table and on a laptop at home, so
+ * it is type and nothing else — no panels, no zebra striping, no boxes around
+ * courses. The section rules do all the grouping.
+ */
+
+@layer skin {
+  .section {
+    padding-block: calc(var(--section) / 2);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .head {
+    margin-block-end: clamp(2.5rem, 5vw, 4rem);
+    max-width: 40rem;
+  }
+
+  .tick {
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 2px;
+    background: var(--action);
+    margin-block-end: 1.75rem;
+  }
+
+  .heading {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: var(--display-leading, 1.14);
+    letter-spacing: var(--display-tracking, 0.02em);
+  }
+
+  .standfirst {
+    margin: 1.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    max-width: 34rem;
+  }
+
+  /*
+   * Columns, not a grid. A course is a run of items of unknown length and CSS
+   * columns balance that automatically; a grid would need every course to be
+   * about the same size, which no real menu is.
+   */
+  .groups {
+    columns: 2;
+    column-gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  @media (width < 56rem) {
+    .groups {
+      columns: 1;
+    }
+  }
+
+  .group {
+    break-inside: avoid;
+    margin-block-end: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .groupHeading {
+    margin: 0 0 1.25rem;
+    padding-block-end: 0.85rem;
+    border-block-end: 1px solid var(--edge);
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 0.6875rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+
+  .groupNote {
+    margin: -0.5rem 0 1.25rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .item + .item {
+    margin-block-start: 1.4rem;
+  }
+
+  /*
+   * Name, leader, price on one baseline. The rule is a flex child that eats the
+   * slack, which is what keeps the price hard right without a table and without
+   * the name being truncated.
+   */
+  .itemHead {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+  }
+
+  .itemName {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .rule {
+    flex: 1 1 auto;
+    min-inline-size: 1.5rem;
+    border-block-end: 1px dotted var(--edge-control);
+    transform: translateY(-0.25em);
+  }
+
+  .price {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .desc {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 30rem;
+  }
+
+  .tags {
+    margin: 0.4rem 0 0;
+    font-size: 0.5625rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .footnote {
+    margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+    padding-block-start: clamp(1.5rem, 3vw, 2.5rem);
+    border-block-start: 1px solid var(--edge);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 44rem;
+  }
+
+  .print {
+    margin-block-start: 2rem;
+  }
+
+  .print a {
+    color: var(--emphasis);
+    text-decoration: none;
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-block-end: 1px solid color-mix(in oklab, currentColor 45%, transparent);
+  }
+}

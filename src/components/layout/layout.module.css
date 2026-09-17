@@ -1,0 +1,126 @@
+/*
+ * Layout primitives.
+ *
+ * Geometry only — no colour, no type, no borders. A skin styles what goes
+ * inside; these decide where it sits. That split is what stops "the same block
+ * as a bento" from becoming a fork of a skin, and it is why these live in
+ * components/ rather than in any one skin.
+ *
+ * Spacing comes from the token layer, so a site running --density 0.85 gets a
+ * tighter bento for free.
+ */
+
+.columns {
+  display: grid;
+  gap: var(--layout-gap, var(--space-6));
+  grid-template-columns: repeat(auto-fit, minmax(var(--layout-min, 15rem), 1fr));
+}
+
+/* A fixed count, for when auto-fit's reflow is not what the design wants. */
+.columnsFixed {
+  grid-template-columns: repeat(var(--layout-count, 3), minmax(0, 1fr));
+}
+
+@media (width < 44rem) {
+  .columnsFixed {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * Bento.
+ *
+ * Six columns and a repeating span pattern, so every row fills whatever the
+ * item count is. `dense` lets a short item backfill a gap rather than leaving
+ * a hole — which is the whole visual point, and also means the arrangement
+ * does not depend on the client entering a multiple of anything.
+ */
+.bento {
+  display: grid;
+  gap: var(--layout-gap, var(--space-4));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  /*
+   * Cells stretch to their row, which is the grid default and is right HERE —
+   * but only because the cards absorb the slack with a picture rather than
+   * with empty space. Tried `align-items: start` when a card could be empty;
+   * it fixed the void and broke the grid, which is the wrong trade once every
+   * card has something in it. If a bento of text-only cards ever comes back,
+   * the fix is a minimum height on the card, not ragged rows.
+   */
+}
+
+.bento > * {
+  grid-column: span 3;
+}
+
+.bento > *:nth-child(6n + 1) {
+  grid-column: span 4;
+}
+
+.bento > *:nth-child(6n + 2),
+.bento > *:nth-child(6n + 3) {
+  grid-column: span 2;
+}
+
+.bento > *:nth-child(6n + 4) {
+  grid-column: span 4;
+}
+
+.bento > *:nth-child(6n + 5),
+.bento > *:nth-child(6n + 6) {
+  grid-column: span 3;
+}
+
+@media (width < 52rem) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bento > *,
+  .bento > *:nth-child(6n + 1),
+  .bento > *:nth-child(6n + 2),
+  .bento > *:nth-child(6n + 3),
+  .bento > *:nth-child(6n + 4),
+  .bento > *:nth-child(6n + 5),
+  .bento > *:nth-child(6n + 6) {
+    grid-column: span 1;
+  }
+
+  .bento > *:nth-child(6n + 1) {
+    grid-column: span 2;
+  }
+}
+
+/*
+ * Rail — a scrolling row.
+ *
+ * Snap points and a visible overflow edge, because a horizontal scroller with
+ * no cue that it scrolls is a row of content nobody ever sees.
+ */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(var(--layout-min, 16rem), 1fr);
+  gap: var(--layout-gap, var(--space-4));
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  padding-block-end: var(--space-2);
+}
+
+.rail > * {
+  scroll-snap-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    scroll-behavior: auto;
+  }
+}
+
+/* A single column of things, evenly spaced. The dullest and most used. */
+.stack {
+  display: grid;
+  gap: var(--layout-gap, var(--space-4));
+}

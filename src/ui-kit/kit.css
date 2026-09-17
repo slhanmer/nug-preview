@@ -1,0 +1,549 @@
+/*
+ * Kit styles.
+ *
+ * Global class names with a `sauce-` prefix rather than CSS Modules, which is a
+ * deliberate exception to ADR 0002. The kit is a package-in-waiting: SAUCE
+ * ships `@sauce-ui/core/styles.css` with exactly these class names, so when the
+ * swap happens this file is deleted and theirs imported. Hashing the names
+ * locally would mean rewriting the components at swap time, which is the one
+ * thing the seam exists to avoid.
+ *
+ * Colour is entirely from the token layer. The two brand lanes are `--fill` and
+ * `--fill-alt`, which the ladder already selects per theme with both label
+ * polarities measured, so `primary` and `cta` differ in hue rather than weight
+ * without any configuration.
+ */
+
+@layer components {
+  /* ------------------------------------------------------------------ depth */
+
+  /*
+   * Depth encodes state: raised at rest says "pressable", inverted says
+   * "pressed", flat says "not an affordance". Always ADDITIVE — the disabled
+   * attribute, the contrast change and the focus ring each still do their own
+   * work, because a shadow is invisible to a screen reader and gone entirely
+   * under forced-colors.
+   *
+   * Local to the kit rather than tokens: this is Etched's language and STARTER
+   * has not adopted it wholesale. Buttons are the one place it earns its keep.
+   */
+  .sauce-btn,
+  .sauce-loader__cell {
+    --lift:
+      0 1px 0 rgb(255 255 255 / 0.18) inset, 0 -1px 0 rgb(0 0 0 / 0.22) inset,
+      0 1px 2px rgb(0 0 0 / 0.18);
+    --press: 0 1px 2px rgb(0 0 0 / 0.28) inset, 0 -1px 0 rgb(255 255 255 / 0.12) inset;
+  }
+
+  /* ----------------------------------------------------------------- button */
+
+  .sauce-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: var(--radius-2);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 120ms ease,
+      box-shadow 120ms ease,
+      transform 120ms ease;
+  }
+
+  .sauce-btn:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .sauce-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+  }
+
+  /*
+   * A 44×44 pointer target at every height, without the control looking that
+   * tall. The pseudo-element is the hit area; the box is the design.
+   */
+  .sauce-btn::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+    min-width: 44px;
+    min-height: 44px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sauce-btn--h-sm {
+    height: 2rem;
+    padding-inline: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .sauce-btn--h-md {
+    height: 2.5rem;
+    padding-inline: var(--space-4);
+    font-size: var(--text-md);
+  }
+
+  .sauce-btn--h-lg {
+    height: 3rem;
+    padding-inline: var(--space-6);
+    font-size: var(--text-lg);
+  }
+
+  /*
+   * PORT NOTE — SAUCE's `w-md` is a 250px minimum, the V Source house default.
+   * That is an application's decision, not a component's: a 250px minimum
+   * button in a venue hero is a slab. Content width here, with the explicit
+   * sizes kept for forms where a row of equal buttons is the point.
+   */
+  .sauce-btn--w-sm {
+    min-width: 7.5rem;
+  }
+
+  .sauce-btn--w-md {
+    min-width: auto;
+  }
+
+  .sauce-btn--w-lg {
+    min-width: 20rem;
+  }
+
+  .sauce-btn--w-full {
+    width: 100%;
+  }
+
+  .sauce-btn--icon-only {
+    padding-inline: 0;
+    aspect-ratio: 1;
+  }
+
+  .sauce-btn__icon {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.15em;
+  }
+
+  /* Keeps the width stable while the loader occupies the icon slot. */
+  .sauce-btn--icon-only.is-busy .sauce-btn__icon--loading {
+    margin: 0;
+  }
+
+  /* ----------------------------------------------------------------- lanes */
+
+  .sauce-btn--primary,
+  .sauce-btn--cta,
+  .sauce-btn--danger,
+  .sauce-btn--success {
+    box-shadow: var(--lift);
+  }
+
+  .sauce-btn--primary:active:not(:disabled),
+  .sauce-btn--cta:active:not(:disabled),
+  .sauce-btn--danger:active:not(:disabled),
+  .sauce-btn--success:active:not(:disabled) {
+    box-shadow: var(--press);
+    translate: 0 1px;
+  }
+
+  .sauce-btn--primary {
+    background: var(--fill);
+    color: var(--on-fill);
+  }
+
+  .sauce-btn--primary:hover:not(:disabled) {
+    background: var(--fill-hover);
+    color: var(--on-fill-hover);
+  }
+
+  .sauce-btn--primary:active:not(:disabled) {
+    background: var(--fill-active);
+    color: var(--on-fill-active);
+  }
+
+  /* The other brand colour, not a heavier primary. */
+  .sauce-btn--cta {
+    background: var(--fill-alt);
+    color: var(--on-fill-alt);
+  }
+
+  .sauce-btn--cta:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  .sauce-btn--secondary {
+    background: transparent;
+    border-color: var(--edge-control);
+    color: var(--text-primary);
+  }
+
+  .sauce-btn--secondary:hover:not(:disabled) {
+    background: var(--surface);
+    border-color: var(--text-primary);
+  }
+
+  .sauce-btn--secondary:active:not(:disabled) {
+    box-shadow: var(--press);
+  }
+
+  .sauce-btn--danger {
+    background: var(--danger);
+    color: var(--on-danger);
+  }
+
+  .sauce-btn--success {
+    background: var(--success);
+    color: var(--on-success);
+  }
+
+  .sauce-btn--danger:hover:not(:disabled),
+  .sauce-btn--success:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+
+  .sauce-btn--text-only {
+    background: transparent;
+    color: var(--emphasis);
+    box-shadow: none;
+    padding-inline: var(--space-2);
+  }
+
+  .sauce-btn--text-only:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+
+
+  /* ------------------------------------------------------------------ field */
+
+  /*
+   * PORT NOTE — legacy shipped `.input-wrapper`, `.input-field`, `.input-label`
+   * and `.character-counter`. Not element selectors like Button's `button {}`,
+   * but the same defect one step removed: `.input-field` is a name a consumer
+   * plausibly already uses, and importing our stylesheet would silently restyle
+   * their form. Everything here is `.sauce-field*`.
+   */
+
+  .sauce-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .sauce-field__label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: var(--leading-heading);
+    color: var(--text-secondary);
+  }
+
+  /* In words, not a red asterisk. See the note in Input.tsx. */
+  .sauce-field__required {
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  .sauce-field__hint {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    color: var(--text-muted);
+  }
+
+  .sauce-field__row {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .sauce-field__control {
+    /* The kit's own md control height, so a field and a Button line up. */
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-3);
+    /* Inherited, never declared. Button §2 — a component adopts the host's
+       typography rather than assuming a typeface it does not ship. */
+    font: inherit;
+    font-size: var(--text-md);
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--edge-control);
+    border-radius: var(--radius-2);
+    /* Without this a field is wider than its grid cell in every browser. */
+    inline-size: 100%;
+    min-width: 0;
+    transition:
+      border-color 120ms ease,
+      background-color 120ms ease;
+  }
+
+  .sauce-field__control::placeholder {
+    color: var(--text-muted);
+    opacity: 1; /* Safari fades it otherwise. */
+  }
+
+  .sauce-field__control:hover:not(:focus):not(:disabled) {
+    border-color: var(--edge-strong);
+  }
+
+  .sauce-field__control:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+    border-color: var(--focus-ring);
+  }
+
+  .sauce-field__control:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background: var(--surface-recessed);
+  }
+
+  /*
+   * Invalid is driven by aria-invalid, never by :invalid. `:invalid` matches an
+   * empty required field on first paint, which paints a fresh form red before
+   * anyone has touched it — legacy did exactly that through its `required`
+   * class.
+   */
+  .sauce-field__control[aria-invalid='true'] {
+    border-color: var(--danger);
+    caret-color: var(--danger);
+  }
+
+  .sauce-field__control--multiline {
+    min-height: 6rem;
+    line-height: var(--leading-body);
+    resize: vertical;
+  }
+
+  /* Room for the reveal button, so a long password does not run under it. */
+  .sauce-field__control--reveals {
+    padding-inline-end: 2.75rem;
+  }
+
+  .sauce-field__control[type='number'] {
+    appearance: textfield;
+  }
+
+  .sauce-field__control::-webkit-outer-spin-button,
+  .sauce-field__control::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .sauce-field__reveal {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    padding: 0;
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--radius-2);
+    cursor: pointer;
+  }
+
+  .sauce-field__reveal:hover:not(:disabled) {
+    color: var(--text-primary);
+  }
+
+  .sauce-field__reveal:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .sauce-field__reveal:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .sauce-field__suffix {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .sauce-field__error {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-heading);
+    color: var(--danger);
+  }
+
+  .sauce-field__counter {
+    margin: 0;
+    font-size: var(--text-xs);
+    text-align: end;
+    color: var(--text-muted);
+  }
+
+  .sauce-field__counter--at-limit {
+    color: var(--danger);
+  }
+
+  /*
+   * Chrome paints autofilled fields its own yellow and ignores background-color.
+   * An enormous inset shadow is the only thing that overrides it, and the
+   * text-fill has to be set separately or the value goes black on a dark ground.
+   */
+  .sauce-field__control:-webkit-autofill,
+  .sauce-field__control:-webkit-autofill:hover,
+  .sauce-field__control:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+    caret-color: var(--text-primary);
+  }
+
+  /* Visually gone, still named. Used by `hideLabel`. */
+  .sauce-visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ----------------------------------------------------------------- loader */
+
+  .sauce-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28em;
+    color: inherit;
+  }
+
+  .sauce-loader--sm {
+    font-size: 0.875rem;
+  }
+
+  .sauce-loader--md {
+    font-size: 1.25rem;
+  }
+
+  .sauce-loader--lg {
+    font-size: 2rem;
+  }
+
+  .sauce-loader__cell {
+    width: 0.28em;
+    height: 0.28em;
+    border-radius: var(--radius-full);
+    background: currentColor;
+    box-shadow: var(--lift);
+    animation: sauce-loader-beat 1.05s infinite ease-in-out;
+  }
+
+  /* Own period per dot, so the row is never in lockstep. */
+  .sauce-loader__cell:nth-child(2) {
+    animation-delay: 0.14s;
+  }
+
+  .sauce-loader__cell:nth-child(3) {
+    animation-delay: 0.28s;
+  }
+
+  @keyframes sauce-loader-beat {
+    0%,
+    100% {
+      scale: 0.72;
+      opacity: 0.45;
+    }
+
+    40% {
+      scale: 1.15;
+      opacity: 1;
+    }
+  }
+
+  .sauce-loader-page {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: color-mix(in oklab, var(--ground) 72%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  /* ------------------------------------------------------------ reductions */
+
+  @media (prefers-reduced-motion: reduce) {
+    .sauce-btn {
+      transition: none;
+    }
+
+    .sauce-field__control {
+      transition: none;
+    }
+
+    .sauce-btn:active:not(:disabled) {
+      translate: none;
+    }
+
+    /* Opacity carries the rhythm; the scale goes. */
+    .sauce-loader__cell {
+      animation-name: sauce-loader-fade;
+    }
+
+    @keyframes sauce-loader-fade {
+      0%,
+      100% {
+        opacity: 0.45;
+      }
+
+      40% {
+        opacity: 1;
+      }
+    }
+  }
+
+  /*
+   * Depth is discarded outright here, which is survivable only because it was
+   * never load-bearing — the border and the system colours carry state.
+   */
+  @media (forced-colors: active) {
+    .sauce-btn {
+      border: 1px solid ButtonText;
+      box-shadow: none;
+    }
+
+    .sauce-btn:active:not(:disabled) {
+      box-shadow: none;
+      translate: none;
+    }
+
+    .sauce-btn:disabled {
+      color: GrayText;
+      border-color: GrayText;
+    }
+
+    .sauce-loader__cell {
+      box-shadow: none;
+      background: CanvasText;
+    }
+
+    .sauce-field__control {
+      border: 1px solid FieldText;
+    }
+
+    .sauce-field__control[aria-invalid='true'] {
+      border-style: dashed;
+    }
+  }
+}

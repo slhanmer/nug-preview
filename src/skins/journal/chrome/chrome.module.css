@@ -1,0 +1,234 @@
+/*
+ * Journal chrome.
+ *
+ * For a business that is sold by being read: an owner-operator whose voice is
+ * the product. The other three skins are built around getting someone to an
+ * action — book, call, order. This one is built around getting someone to the
+ * end of a sentence, so the furniture gets out of the way: no sticky bar, no
+ * boxes, no card over a photograph. A masthead, a hairline, and a column.
+ *
+ * Colour is entirely from the token layer, as always.
+ */
+
+@layer skin {
+  .page {
+    --gutter: clamp(1.25rem, 6vw, 5rem);
+    /*
+     * Wider than the venue's, because this skin puts things OUTSIDE the column
+     * on purpose — a media split runs off one edge, a quote sits half a column
+     * left of the body. That only reads as deliberate if there is page to
+     * spare either side of the text.
+     */
+    --measure: min(94vw, 82rem);
+    /* The reading column, and it is narrow. Long measure is the enemy of a
+       page whose argument is that a person wrote it. */
+    --column: 34rem;
+    --section: clamp(4rem, 11vw, 9rem);
+
+    --display:
+      var(--display-site, 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text-primary);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ------------------------------------------------------------- masthead */
+
+  /*
+   * Not sticky, and that is the decision rather than an omission.
+   *
+   * A bar pinned to the viewport is a permanent reminder that you are inside a
+   * piece of software. This skin wants the opposite, so the masthead is printed
+   * at the top of the page and then it is gone.
+   */
+  .masthead {
+    padding-block: clamp(1.75rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+    text-align: center;
+  }
+
+  .brand {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brandMark {
+    display: block;
+    margin-inline: auto;
+    height: auto;
+    width: auto;
+    max-height: 5.5rem;
+    max-width: 16rem;
+    border-radius: var(--radius);
+  }
+
+  .brandName {
+    display: block;
+    font-family: var(--display);
+    font-size: clamp(2rem, 6vw, 3.25rem);
+    line-height: var(--display-leading, 1);
+    letter-spacing: var(--display-tracking, -0.02em);
+    color: var(--emphasis);
+  }
+
+  /*
+   * With a mark above it the name is a caption to the logo rather than the logo
+   * itself, so it drops a step and the mark gives up some height. Both at full
+   * size is two logos stacked, and it costs the first screen.
+   */
+  .brandWithMark .brandMark {
+    max-height: 4rem;
+  }
+
+  .brandWithMark .brandName {
+    margin-block-start: 0.6rem;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+  }
+
+  .descriptor {
+    margin: 0.85rem 0 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /*
+   * The nav is a rule with words on it. Border on the nav rather than the
+   * masthead so it spans the reading width and not the whole screen — a full
+   * bleed line here reads as a header again, which is what this is avoiding.
+   */
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(1.25rem, 4vw, 2.75rem);
+    margin-block-start: clamp(1.5rem, 3vw, 2.25rem);
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .navLink {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-block: 0.25rem;
+    border-block-end: 1px solid transparent;
+  }
+
+  .navLink:hover {
+    color: var(--text-primary);
+    border-block-end-color: currentColor;
+  }
+
+  /* The one action, and it is a word with a line under it rather than a
+     button. A filled rectangle in a masthead is a toolbar again. */
+  .navCta {
+    color: var(--emphasis);
+    border-block-end-color: var(--emphasis);
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ----------------------------------------------------------------- main */
+
+  /*
+   * The element, not a class — PageBySlug renders a bare <main>, so a `.main`
+   * class in a skin matches nothing. Learned the hard way in the venue skin;
+   * written down here so it is not learned again.
+   */
+  .page > main {
+    flex: 1;
+  }
+
+  /* ---------------------------------------------------------------- footer */
+
+  .footer {
+    margin-block-start: var(--section);
+    padding-block: clamp(3rem, 7vw, 5rem) 2rem;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  /*
+   * The name, at sign-off size. This is the last thing on the page and it is
+   * the loudest thing in the chrome, which is the right way round for a
+   * business whose name is a person's project.
+   */
+  .signoff {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 9vw, 5.5rem);
+    line-height: var(--display-leading, 0.95);
+    letter-spacing: var(--display-tracking, -0.03em);
+    color: var(--emphasis);
+    margin: 0;
+  }
+
+  .footerTagline {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary);
+    font-size: 1.0625rem;
+    max-width: 34rem;
+  }
+
+  .footerFacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1.75rem clamp(1.5rem, 4vw, 3rem);
+    margin-block-start: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .factLabel {
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  .factValue {
+    margin: 0 0 0.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  .factValue a {
+    color: inherit;
+    text-decoration: none;
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .factValue a:hover {
+    color: var(--text-primary);
+    border-block-end-color: currentColor;
+  }
+
+  .colophon {
+    margin-block-start: clamp(2.5rem, 5vw, 4rem);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+}

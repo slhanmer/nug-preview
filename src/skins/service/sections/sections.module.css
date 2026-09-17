@@ -1,0 +1,971 @@
+/*
+ * Service section renderers.
+ *
+ * Boxed, not open. The venue's sections float in space and are separated by
+ * air; these sit on bordered surfaces and are separated by edges. That is the
+ * difference between a room you sit in and a business you check out.
+ *
+ * Hero text sits on a solid panel rather than over the photograph. Slightly
+ * less romantic, and it means the contrast contract still holds at the one
+ * place the ladder cannot measure.
+ */
+
+@layer skin {
+  .section {
+    padding-inline: var(--gutter);
+  }
+
+  .wide {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
+  .text {
+    max-width: 44rem;
+  }
+
+  .heading {
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: var(--display-tracking, -0.02em);
+    line-height: var(--display-leading, 1.12);
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--emphasis);
+    margin: 0 0 0.75rem;
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .body p {
+    line-height: 1.7;
+    margin: 0 0 1em;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* -------------------------------------------------------------- actions */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-block-start: 1.5rem;
+  }
+
+  .primary,
+  .secondary {
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.8rem 1.35rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+  }
+
+  /*
+   * The third colour, not the ink. Same reasoning as the header action: a
+   * near-black button under a near-black heading is not a call to action, it
+   * is more text. `--action` is measured against its own label, so this is a
+   * contract role rather than a decoration.
+   */
+  .primary {
+    background: var(--action);
+    color: var(--on-action);
+  }
+
+  .primary:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+  }
+
+  .primary:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  .secondary {
+    border-color: var(--edge-control);
+    color: var(--text-primary);
+    background: var(--ground);
+  }
+
+  .secondary:hover {
+    border-color: var(--text-primary);
+  }
+
+  /* ----------------------------------------------------------------- hero */
+
+  /*
+   * Full bleed, and the reason it was not.
+   *
+   * `.heroMedia` is `position: absolute; inset: 0`, which resolves against the
+   * PADDING box — so the gutter `.section` puts on every section was insetting
+   * the photograph itself and leaving a strip of ground either side. The hero
+   * is the one section whose background has to reach the edge of the screen,
+   * so it takes no inline padding and `.heroInner` carries the gutter instead.
+   */
+  .hero {
+    position: relative;
+    padding-inline: 0;
+    margin-block-start: 0 !important;
+  }
+
+  .heroMedia {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .heroMedia img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Same geometry as chrome's .inner, so the hero card and the header logo
+     share a left edge. Wins over .wide on source order, not specificity. */
+  .heroInner {
+    position: relative;
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    padding-inline: var(--gutter);
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+
+  /*
+   * A card, not a scrim — but not an opaque slab either.
+   *
+   * Text over a photograph has no measurable contrast, which is why this is a
+   * panel rather than a shadow. Solid, though, it cuts a white rectangle out
+   * of the picture and the hero stops being a photograph of the business.
+   *
+   * 92% ground over a 20px blur is the compromise: the frames read through as
+   * colour and movement, and the worst case behind the type is 8% of a
+   * blurred photograph, which cannot move a 4.5:1 pair below the bar. The
+   * @supports fallback is not optional — without backdrop-filter this is
+   * simply translucent, and then the contrast really is unmeasured.
+   */
+  .heroCard {
+    background: color-mix(in oklab, var(--ground) 92%, transparent);
+    backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    max-width: 38rem;
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .heroCard {
+      background: var(--ground);
+    }
+  }
+
+  .heroHeading {
+    font-size: clamp(1.875rem, 5vw, 3.25rem);
+  }
+
+  .heroSub {
+    margin: 1rem 0 0;
+    max-width: 42ch;
+  }
+
+  /* ------------------------------------------------------ hero: split */
+
+  /*
+   * Type one side, photograph the other.
+   *
+   * This exists because of the pictures these businesses actually have: a
+   * portrait phone shot in a full-width showcase hero gets its middle third
+   * cropped out and scaled up about 2x, which is what "the hero looks out of
+   * focus" nearly always turns out to be. At half the width and a 4:5 frame
+   * the same file is used at or under its native size and reads sharp.
+   *
+   * No card and no scrim needed either — the type is on --ground, so the
+   * contrast contract holds by construction rather than by judgement.
+   */
+  .heroSplit {
+    margin-block-start: 0 !important;
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .heroSplitInner {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+
+  @media (width >= 52rem) {
+    .heroSplitInner {
+      /* Words slightly wider than the photograph — this skin sells the
+         promise and the phone number, and the picture corroborates it. */
+      grid-template-columns: 1.15fr 1fr;
+    }
+  }
+
+  .heroSplitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+  }
+
+  /* ------------------------------------------------------- hero: mark */
+
+  /*
+   * The image gets the whole width and carries nothing.
+   *
+   * For a business whose signage IS the identity — a lit wordmark on a wall
+   * beats any photograph they own, and putting a heading across it would
+   * waste the one thing worth looking at. So the type goes in a band
+   * underneath instead, which also means no scrim, no panel and no contrast
+   * judgement anywhere in the hero.
+   */
+  .heroMark {
+    margin-block-start: 0 !important;
+    padding-inline: 0;
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .heroMarkMedia img {
+    display: block;
+    width: 100%;
+    /* Wide and shallow, so a centred mark reads as signage rather than as a
+       picture of a wall. Deeper on a phone or the crop eats the letterforms. */
+    aspect-ratio: 3 / 1;
+    /* The cap does the work, not the ratio. A ratio alone keeps growing with
+       the viewport, so a wide monitor gets a hero nothing can scroll past. */
+    max-block-size: min(56vh, 34rem);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  @media (width < 48rem) {
+    .heroMarkMedia img {
+      aspect-ratio: 5 / 3;
+      max-block-size: 40vh;
+    }
+  }
+
+  .heroMarkWords {
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    padding-inline: var(--gutter);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+    text-align: center;
+  }
+
+  .heroMarkWords .heroSub {
+    margin-inline: auto;
+  }
+
+  .heroMarkWords .actions {
+    justify-content: center;
+  }
+
+  /* ------------------------------------------------------ hero: plain */
+
+  /* When the only photograph available is worse than none. */
+  .heroPlain {
+    margin-block-start: 0 !important;
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  /* No inline padding or max-width here — `.section` and `.wide` already do
+     both. Repeating them double-pads and pulls it off the section line. */
+  .heroPlainInner {
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .heroPlainInner .heroSub {
+    max-width: 52ch;
+  }
+
+  .heroPoints {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+  }
+
+  .heroPoints li::before {
+    content: '✓';
+    color: var(--emphasis);
+    font-weight: 700;
+    margin-inline-end: 0.5rem;
+  }
+
+  /* ----------------------------------------------------------- mediaSplit */
+
+  .split {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  @media (width >= 52rem) {
+    .split {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .splitRight .splitMedia {
+      order: 2;
+    }
+  }
+
+  .splitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+  }
+
+  .splitHeading {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+    margin-block-end: 1rem;
+  }
+
+  /* ----------------------------------------------------------- featureGrid */
+
+  .gridHead {
+    max-width: 44rem;
+    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  /*
+   * A drawn mark, never text.
+   *
+   * `--swatch-accent` is the client's second colour verbatim and the one role
+   * exempt from the contrast contract, so it is only safe where nothing is
+   * being read. Colouring the heading with it would put an unmeasured colour
+   * under body-text rules for every future client; a rule beside it carries
+   * the same lift and cannot fail.
+   */
+  .gridHead::before {
+    content: '';
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 3px;
+    background: var(--swatch-accent);
+    margin-block-end: 1rem;
+  }
+
+  .gridHeading {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+  }
+
+  /* Geometry moved to components/layout — the block chooses its arrangement. */
+
+  /*
+   * The card is a container, and the picture fills whatever the words leave.
+   *
+   * Cards stretch to their row again — `align-items: start` was the right fix
+   * when a card could be empty and inflate, and the wrong one now that every
+   * card carries a picture: ragged bottoms on six full cards read as a broken
+   * grid rather than as a bento. Equal heights are fine as long as nothing is
+   * EMPTY, and a picture set to absorb the slack is what guarantees that.
+   *
+   * `overflow: hidden` is load-bearing: the pictures bleed past the padding to
+   * the card's edge, and without it they square off the corners.
+   */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    padding: 1.35rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * The words take the slack, not the picture.
+   *
+   * The reverse was tried: `flex: 1 1 auto` on the media so it absorbed
+   * whatever the text left. On a bento that is a feedback loop — one card with
+   * three lines of body sets the row height, and every other card in that row
+   * answers by growing its picture, so a two-line card ends up as a 300px
+   * photograph with a caption. The picture is a fixed band now and the card's
+   * spare height falls below the text, where it reads as breathing room.
+   */
+  .cardWords {
+    flex: 1 1 auto;
+  }
+
+  /*
+   * Card colour, chosen per card rather than by position.
+   *
+   * This was `:nth-child` on the wide cells, which tied colour to the layout —
+   * neat, and wrong the moment the content decides which service deserves
+   * weight. `tone` is now a name on the item and these are its three values.
+   *
+   * All three are client colours verbatim and exempt from the contrast
+   * contract, which is why they are only ever mixed a little way into a
+   * surface: the text still sits on what is effectively --surface, a shade
+   * warmer. Anything strong enough to change that would have to be measured.
+   */
+  .toneAccent {
+    background: color-mix(in oklab, var(--swatch-accent) 12%, var(--surface));
+    border-color: color-mix(in oklab, var(--swatch-accent) 30%, var(--edge));
+  }
+
+  .toneThird {
+    background: color-mix(in oklab, var(--swatch-third) 12%, var(--surface));
+    border-color: color-mix(in oklab, var(--swatch-third) 30%, var(--edge));
+  }
+
+  .toneBrand {
+    background: color-mix(in oklab, var(--swatch-brand) 8%, var(--surface));
+    border-color: color-mix(in oklab, var(--swatch-brand) 24%, var(--edge));
+  }
+
+  /* ------------------------------------------------------- card: media side */
+
+  /*
+   * Beside the words on a wide cell, above them on a narrow one — and bled to
+   * the card edge whichever side it lands on. Grid rather than flex for the
+   * side cases so the picture column stretches to the card's full height
+   * without being told a height.
+   *
+   * Below 40rem everything stacks: a picture in a column beside two lines of
+   * type is not a layout, it is a thumbnail.
+   */
+  .mediaBottom {
+    flex-direction: column-reverse;
+  }
+
+  .mediaBottom > .cardMedia {
+    margin: 1.1rem -1.35rem -1.35rem;
+  }
+
+  @media (width >= 40rem) {
+    .mediaLeft,
+    .mediaRight {
+      display: grid;
+      /*
+       * Between a third and a half. 4fr/8fr left the paragraph ending well
+       * short of the card's edge on a span-4 cell, which reads as a gap rather
+       * than as a margin; 5fr/7fr spends that space on the picture, where it
+       * is doing something.
+       */
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 1.35rem;
+      align-items: stretch;
+    }
+
+    .mediaRight {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+
+    /* Full card height here — the band is only for the stacked cards, where
+       it is competing with the text for the same axis. */
+    .mediaLeft > .cardMedia,
+    .mediaRight > .cardMedia {
+      block-size: auto;
+    }
+
+    .mediaLeft > .cardMedia {
+      margin: -1.35rem 0 -1.35rem -1.35rem;
+    }
+
+    .mediaRight > .cardMedia {
+      order: 2;
+      margin: -1.35rem -1.35rem -1.35rem 0;
+    }
+  }
+
+  .cardLink {
+    display: inline-block;
+    margin-block-start: 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--emphasis);
+    text-decoration: none;
+    border-block-end: 1px solid var(--edge-strong);
+    padding-block-end: 1px;
+  }
+
+  .cardLink::after {
+    content: ' →';
+    /* In the pseudo-element so it never wraps onto its own line. */
+    white-space: nowrap;
+  }
+
+  .cardLink:hover {
+    border-block-end-color: currentColor;
+  }
+
+  /*
+   * Bled to the card's edge on every side it touches, and no border.
+   *
+   * A band, not a proportion. Every stacked card gets the same picture height
+   * whatever its width, which is what makes six cards of different spans read
+   * as one set — and it is a ceiling the text cannot be pushed under.
+   */
+  .cardMedia {
+    flex: 0 0 auto;
+    block-size: clamp(7rem, 15vw, 10rem);
+    margin: -1.35rem -1.35rem 1.1rem;
+  }
+
+  .cardMedia img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /*
+   * Mounted, the way a framer would.
+   *
+   * Board around the picture, a rebate line where the mat meets it, and the
+   * shadow of something hanging a few millimetres off the wall. The board is
+   * --ground rather than white: it is the page's own paper, so the mount
+   * belongs to the site instead of being a white rectangle laid on it.
+   *
+   * The picture keeps its own edges — no radius inside a mount, because a
+   * bevel-cut window has corners.
+   */
+  .cardMat {
+    margin-block-end: 1.1rem;
+    padding: clamp(0.6rem, 2.5cqi, 1.1rem);
+    background: var(--ground);
+    border: 1px solid var(--edge-strong);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.10),
+      0 10px 22px -10px rgb(0 0 0 / 0.22);
+  }
+
+  .cardMat img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    /* The rebate — the lip that holds the picture under the board. */
+    outline: 1px solid color-mix(in oklab, var(--edge-strong) 70%, transparent);
+    outline-offset: 0;
+  }
+
+  .cardTitle {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.1875rem;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
+  }
+
+  .cardBody {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  /* -------------------------------------------------------------- gallery */
+
+  /*
+   * Tighter than the feature grid on purpose. Cards want air between them
+   * because each one is a separate idea; photographs of the same room want to
+   * read as one object, and a 0.75rem gutter is what does that.
+   */
+  .shot {
+    margin: 0;
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface-recessed);
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    /* Set per block by the renderer; `auto` is the "as shot" case. */
+    aspect-ratio: var(--shot-aspect, 1 / 1);
+    object-fit: cover;
+  }
+
+  .shotCaption {
+    padding: 0.55rem 0.75rem;
+    background: var(--surface);
+    border-block-start: 1px solid var(--edge);
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  /* A rail scrolled to the gutter rather than to the viewport edge. */
+  .gallery {
+    scroll-padding-inline: var(--gutter);
+  }
+
+  /* ---------------------------------------------------------------- quote */
+
+  /* A testimonial, not an epigraph. Left aligned, boxed, attributed. */
+  .quoteCard {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-inline-start: 4px solid var(--emphasis);
+    border-radius: var(--radius);
+    padding: clamp(1.75rem, 4vw, 3rem);
+    max-width: 52rem;
+  }
+
+  /* It is the only sentence in the section, so it is allowed to be the size of
+     a heading. At body size inside a hairline box it read as a stray caption. */
+  .quoteText {
+    font-family: var(--display);
+    margin: 0;
+    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .quoteAttr {
+    margin: 1rem 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* ------------------------------------------------------------ logoStrip */
+
+  .strip {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .stripHeading {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: 0 0 1.25rem;
+  }
+
+  .stripItems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .stripItems img {
+    display: block;
+    height: clamp(2rem, 5vw, 3rem);
+    width: auto;
+  }
+
+  /* ------------------------------------------------------------------ faq */
+
+  .faqHeading {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+    margin-block-end: 1.5rem;
+  }
+
+  .faqList {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 48rem;
+  }
+
+  .faqItem {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+  }
+
+  .faqQuestion {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.95rem 1.15rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .faqQuestion::-webkit-details-marker {
+    display: none;
+  }
+
+  .faqQuestion::after {
+    content: '+';
+    color: var(--emphasis);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .faqItem[open] .faqQuestion::after {
+    content: '−';
+  }
+
+  .faqAnswer {
+    padding: 0 1.15rem 1.15rem;
+    color: var(--text-secondary);
+    max-width: 62ch;
+  }
+
+  /* ------------------------------------------------------------------ cta */
+
+  .cta {
+    background: var(--fill);
+    color: var(--on-fill);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .ctaInner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .ctaHeading {
+    font-size: clamp(1.375rem, 3vw, 2.125rem);
+    max-width: 24ch;
+  }
+
+  .ctaBody {
+    margin: 0.5rem 0 0;
+    max-width: 44ch;
+    opacity: 0.9;
+  }
+
+  /* The band already carries the fill, so the button inverts against it. */
+  .ctaAction {
+    background: var(--ground);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    padding: 0.85rem 1.5rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+  }
+
+  /* -------------------------------------------------------------- contact */
+
+  .contactCard {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    max-width: 46rem;
+  }
+
+  .contactHeading {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+  }
+
+  .contactBody {
+    margin-block-start: 0.75rem;
+  }
+
+  .contactNote {
+    margin-block-start: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* The skin positions the form and never reaches inside it — the fields,
+     labels and spam check are shared with the server action. */
+  .contactForm {
+    margin-block-start: 2rem;
+  }
+
+  /* --------------------------------------------------- module: menu/prices */
+
+  /*
+   * Two columns, and each section its own box.
+   *
+   * This is a forty-year price book, not a menu: one 48rem column of it is a
+   * quarter-mile of scrolling past sizes nobody is looking for, with two
+   * thirds of a wide screen empty beside it. Columns rather than a grid so a
+   * short group can sit under a long one instead of leaving a hole, and
+   * `break-inside` so no group is ever split across the fold.
+   */
+  .prices {
+    columns: 2;
+    column-gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  @media (width < 56rem) {
+    .prices {
+      columns: 1;
+    }
+  }
+
+  .priceGroup {
+    break-inside: avoid;
+    margin-block-end: clamp(1.25rem, 2.5vw, 2rem);
+    background: var(--ground);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /*
+   * The heading names the process and the paper — "Lustre prints — Fujicolor"
+   * is the part a customer is actually scanning for. It gets the rule and the
+   * band, so the eye lands on it before it lands on a number.
+   */
+  .priceGroupHeading {
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+    box-shadow: inset 0.25rem 0 0 var(--swatch-accent);
+    margin: 0;
+    padding: 0.7rem 1.15rem 0.7rem 1.4rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .priceRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.15rem;
+  }
+
+  .priceRow + .priceRow {
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .priceName {
+    font-weight: 600;
+  }
+
+  .priceDesc {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .priceValue {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* The dollar sign is set a shade quieter than the number it belongs to, so a
+     column of prices reads as a column of figures rather than of symbols. */
+  .priceValue > span {
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-inline-end: 0.05em;
+  }
+
+  .priceTags {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-inline-start: 0.5rem;
+  }
+
+  /* ----------------------------------------------- module: commerce/shop */
+
+  .product {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .productMedia {
+    aspect-ratio: 4 / 3;
+    background: var(--surface-recessed);
+  }
+
+  .productMedia img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .productBody {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.5rem;
+    padding: 1.125rem 1.25rem 1.25rem;
+  }
+
+  .productTitle {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: var(--leading-heading);
+    color: var(--text-primary);
+  }
+
+  .productText {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: var(--leading-body);
+    color: var(--text-secondary);
+  }
+
+  /* Pushed to the bottom so a row of cards lines its prices up regardless of
+     how much description each one carries. */
+  .productFoot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-block-start: auto;
+    padding-block-start: 0.75rem;
+  }
+
+  .productPrice {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .productSold {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+}

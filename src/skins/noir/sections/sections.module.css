@@ -1,0 +1,648 @@
+/*
+ * Noir section renderers.
+ *
+ * ONE image on each page dissolves, and it is the hero. Its edges are masked
+ * away so it has no findable boundary and reads as something lit in a dark room
+ * rather than as a rectangle that was pasted there.
+ *
+ * EVERY OTHER PHOTOGRAPH IS HARD-EDGED, and that is a rule rather than an
+ * inconsistency. The dissolve was tried on the splits, the carousel and the
+ * gallery cells, and below a certain size it stops reading as a dissolve and
+ * starts reading as a soft-focus filter applied to somebody's photograph — the
+ * giveaway being that you can take in the whole of the transition at once. It
+ * needs an image big enough that you cannot. That is the hero and nothing else,
+ * so the opening frame is the one that floats and the rest of the page is
+ * printed.
+ *
+ * The second move is restraint with colour. `--action` is the only saturated
+ * value on the page and it appears twice per screen at most: once as a button
+ * (measured, with a dark label) and once as a 2.5rem rule that carries no
+ * information at all. It is never a word — see the note on .tick.
+ */
+
+@layer skin {
+  .section {
+    padding-block: calc(var(--section) / 2);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .column {
+    max-width: var(--column);
+  }
+
+  .heading {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: var(--display-leading, 1.14);
+    letter-spacing: var(--display-tracking, 0.02em);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .sectionHeading {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  .eyebrow {
+    margin: 0 0 1.5rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    max-width: 34rem;
+  }
+
+  .body {
+    max-width: var(--column);
+    color: var(--text-secondary);
+  }
+
+  .body p {
+    line-height: 1.8;
+    margin: 0 0 1.2em;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .head {
+    margin-block-end: clamp(2.5rem, 5vw, 4rem);
+    max-width: 40rem;
+  }
+
+  /*
+   * THE ONE PIECE OF COLOUR, and it is a line rather than a word.
+   *
+   * `--action` here is a 2.5rem rule above a heading. That is not squeamishness
+   * about decoration — it is the contract: on this ground the client's magenta
+   * measures 4.59:1 as type, which clears the bar by three hundredths, and a
+   * role that passes by that margin is not a role you set paragraphs in. As a
+   * filled control it carries a dark label at 4.67:1 with room to spare. So the
+   * colour is not banned from the page, it is confined to the two places it is
+   * unarguable: a button, and a mark that says nothing.
+   */
+  .tick {
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 2px;
+    background: var(--action);
+    margin-block-end: 1.75rem;
+  }
+
+  /* -------------------------------------------------------------- actions */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.75rem;
+    margin-block-start: 2.5rem;
+  }
+
+  .actions:empty {
+    display: none;
+  }
+
+  .primary {
+    background: var(--action);
+    color: var(--on-action);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-full);
+  }
+
+  .primary:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+  }
+
+  .primary:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  /* Text with a rule under it. A second filled button competes with the first
+     and this skin only has one bright thing to spend per screen. */
+  .secondary,
+  .textLink {
+    color: var(--emphasis);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding-block-end: 0.3rem;
+    border-block-end: 1px solid color-mix(in oklab, currentColor 45%, transparent);
+  }
+
+  .secondary:hover,
+  .textLink:hover {
+    border-block-end-color: currentColor;
+  }
+
+  /* ----------------------------------------------------------------- hero */
+
+  .hero {
+    padding-block: clamp(2rem, 6vw, 5rem) clamp(3rem, 8vw, 7rem);
+    /* The media below is pulled past the viewport edge on purpose; this is what
+       stops that becoming a horizontal scrollbar. */
+    overflow-x: clip;
+  }
+
+  .heroInner {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+    min-block-size: min(78svh, 46rem);
+  }
+
+  .heroBare .heroInner {
+    min-block-size: auto;
+  }
+
+  @media (width >= 60rem) {
+    .heroInner {
+      /* The words get less than half. The rest is the void, and the void is
+         the point — a hero that fills its own width is a hero with nothing
+         confident to say. */
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    }
+  }
+
+  .heroWords {
+    max-width: 34rem;
+  }
+
+  .heroHeading {
+    font-size: clamp(2.25rem, 5.2vw, 4rem);
+    max-width: 16ch;
+  }
+
+  .heroSub {
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+    font-size: clamp(1rem, 1.4vw, 1.1875rem);
+    max-width: 30rem;
+  }
+
+  /*
+   * Runs off the right edge of the VIEWPORT, not of the measure.
+   *
+   * A plain `-1 * gutter` only reaches the edge while the measure is still
+   * wider than the screen. Past about 1500px the measure caps at 84rem, the
+   * page gains a margin either side, and the photograph stopped dead in open
+   * black with a hard vertical line down it — the one edge in the whole design
+   * that is supposed to be uncut.
+   *
+   * So the pull is the gutter PLUS whatever the centred measure left over.
+   * `100vw` includes the scrollbar and will overshoot by a few pixels, which is
+   * why `.hero` clips rather than scrolls.
+   */
+  .heroMedia {
+    margin-inline-end: calc(var(--gutter) * -1 - (100vw - var(--measure)) / 2);
+  }
+
+  .heroMedia img {
+    display: block;
+    width: 100%;
+    max-block-size: min(78svh, 46rem);
+    object-fit: cover;
+    /*
+     * Two masks multiplied — one per axis — so the frame has no findable
+     * corner anywhere. The first version faded only the left and the bottom
+     * and left a dead straight line across the top of the photograph, which is
+     * the exact seam this whole technique exists to remove.
+     *
+     * The horizontal ramp is long (28%) because that edge runs into the words;
+     * the vertical ones are short, because all they have to do is kill the cut.
+     */
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 28%),
+      linear-gradient(to bottom, transparent, #000 13%, #000 74%, transparent);
+    mask-image:
+      linear-gradient(to right, transparent, #000 28%),
+      linear-gradient(to bottom, transparent, #000 13%, #000 74%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  @media (width < 60rem) {
+    .heroMedia {
+      margin-inline: calc(var(--gutter) * -1);
+    }
+
+    .heroMedia img {
+      aspect-ratio: 4 / 3;
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 66%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 66%, transparent);
+      -webkit-mask-composite: source-over;
+      mask-composite: add;
+    }
+  }
+
+  /* ----------------------------------------------------------- mediaSplit */
+
+  .split {
+    overflow-x: clip;
+  }
+
+  .splitInner {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+
+  .splitWords {
+    max-width: 30rem;
+  }
+
+  .splitHeading {
+    margin-block-end: 1.75rem;
+  }
+
+  .splitAction {
+    margin-block-start: 2.5rem;
+  }
+
+  .splitMedia {
+    margin: 0;
+  }
+
+  .splitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  @media (width >= 56rem) {
+    .splitInner {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    }
+
+    .splitMedia {
+      margin-inline-end: calc(var(--gutter) * -1);
+    }
+
+
+    .splitRight .splitInner {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    }
+
+    .splitRight .splitWords {
+      order: 2;
+      justify-self: end;
+    }
+
+    .splitRight .splitMedia {
+      order: 1;
+      margin-inline: calc(var(--gutter) * -1) 0;
+    }
+
+  }
+
+  /* -------------------------------------------------------------- columns */
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .col {
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .colTitle {
+    margin: 0 0 0.9rem;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 0.8125rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .colText {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  /* -------------------------------------------------------------- gallery */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+  /*
+   * Scrolls out through the gutter, so the row is visibly cut off by the
+   * viewport rather than stopping inside the measure. A rail that ends tidily
+   * inside the page does not look scrollable and nobody scrolls it.
+   */
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(14rem, 22vw);
+    gap: clamp(1rem, 2.5vw, 2rem);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline-end: calc(var(--gutter) * -1);
+    padding-inline-end: var(--gutter);
+    scrollbar-width: thin;
+    overscroll-behavior-inline: contain;
+  }
+
+  .rail > * {
+    scroll-snap-align: start;
+  }
+
+  .shot {
+    margin: 0;
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--shot-aspect, 1 / 1);
+    object-fit: cover;
+  }
+
+  .shotCaption {
+    margin-block-start: 0.9rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ----------------------------------------------------------------- fade */
+
+  .fade {
+    display: grid;
+    justify-items: center;
+  }
+
+  /*
+   * Head beside the frames rather than above them.
+   *
+   * The stack is deliberately narrow — a product shot blown across the measure
+   * stops being an object — which leaves half the page empty if the heading
+   * sits on top of it. Set side by side, the copy reads as a caption to the
+   * thing that is moving, which is what it is.
+   */
+  @media (width >= 62rem) {
+    .fadeLayout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+      gap: clamp(3rem, 7vw, 6rem);
+      align-items: center;
+    }
+
+    .fadeLayout .head {
+      margin-block-end: 0;
+    }
+  }
+
+  /*
+   * Held narrow on purpose. The frames are a product shot, and a product shot
+   * blown across a 84rem measure stops being an object and becomes wallpaper.
+   */
+  .fadeStack {
+    position: relative;
+    width: min(100%, 26rem);
+    aspect-ratio: var(--fade-ratio, 4 / 5);
+  }
+
+  .fadeFrame {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    /*
+     * 600ms, down from 900. At the slower speed the middle of the crossfade
+     * held long enough to be seen as a double exposure, which draws attention
+     * to the fact that the three frames are not one frame. Quicker and the eye
+     * reads it as the label changing.
+     */
+    transition: opacity 600ms ease-in-out;
+  }
+
+  .fadeFrame[data-active] {
+    opacity: 1;
+  }
+
+  .fadeFrame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fadeFrame {
+      transition: none;
+    }
+  }
+
+  .fadeTicks {
+    display: flex;
+    gap: 0.6rem;
+    margin-block-start: 1.75rem;
+  }
+
+  .fadeTick {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    inline-size: 2rem;
+    block-size: 2px;
+    background: var(--edge-control);
+    transition: background 300ms ease;
+  }
+
+  .fadeTick[data-active] {
+    background: var(--action);
+  }
+
+  .fadeTick:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 4px;
+  }
+
+  .fadeCaption {
+    margin: 1.25rem 0 0;
+    min-block-size: 1.4em;
+    text-align: center;
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ---------------------------------------------------------------- quote */
+
+  .quote {
+    margin: 0 auto;
+    max-width: 44rem;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+  }
+
+  .quoteText {
+    font-family: var(--display);
+    font-weight: 300;
+    font-size: clamp(1.5rem, 3.6vw, 2.5rem);
+    line-height: 1.45;
+    letter-spacing: var(--display-tracking, 0.01em);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .quoteText::before {
+    content: '\201C';
+  }
+
+  .quoteText::after {
+    content: '\201D';
+  }
+
+  .quoteAttr {
+    margin-block-start: 2rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .quoteRole::before {
+    content: ' · ';
+  }
+
+  /* ------------------------------------------------------------ logoStrip */
+
+  .strip {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: center;
+    padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    border-block: 1px solid var(--edge);
+  }
+
+  .stripHeading {
+    margin: 0;
+    font-size: 0.625rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .stripItems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.75rem, 5vw, 3.5rem);
+  }
+
+  .stripItems img {
+    height: 2rem;
+    width: auto;
+    object-fit: contain;
+    opacity: 0.75;
+  }
+
+  /* ------------------------------------------------------------------ faq */
+
+  .faq {
+    margin: 0;
+    border-block-start: 1px solid var(--edge);
+    max-width: 52rem;
+  }
+
+  .faqItem {
+    padding-block: clamp(1.5rem, 3vw, 2rem);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .faqQuestion {
+    margin: 0 0 0.75rem;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 0.9375rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .faqAnswer {
+    margin: 0;
+  }
+
+  .faqAnswer p {
+    margin: 0 0 0.7em;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+
+  .faqAnswer p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ------------------------------------------------------------------ cta */
+
+  .cta {
+    padding-block: clamp(4.5rem, 10vw, 8rem);
+    border-block-start: 1px solid var(--edge);
+    text-align: center;
+  }
+
+  .cta .inner {
+    display: grid;
+    justify-items: center;
+  }
+
+  .ctaHeading {
+    font-size: clamp(1.875rem, 4.5vw, 3.25rem);
+    max-width: 18ch;
+  }
+
+  .ctaBody {
+    margin: 1.5rem 0 0;
+    max-width: 38ch;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .cta .actions {
+    justify-content: center;
+  }
+
+  /* -------------------------------------------------------------- contact */
+
+  .contactForm {
+    margin-block-start: 2.5rem;
+  }
+}

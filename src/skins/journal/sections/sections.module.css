@@ -1,0 +1,608 @@
+/*
+ * Journal section renderers.
+ *
+ * One narrow column of type, and things that deliberately escape it. The other
+ * skins centre everything inside one measure and vary the box; this one keeps
+ * the words in a 34rem column and lets photographs, quotes and the index run
+ * wider or off the edge entirely. That asymmetry is the whole look, and it is
+ * why there is no card anywhere in this file.
+ */
+
+@layer skin {
+  .section {
+    padding-block: calc(var(--section) / 2);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /*
+   * The reading column, set hard left rather than centred.
+   *
+   * Centred prose inside a wide page has no edge to align to, so anything that
+   * breaks out of it looks like a mistake. Against a left margin, a photograph
+   * running off the right is obviously deliberate.
+   */
+  .column {
+    max-width: var(--column);
+  }
+
+  /*
+   * Headings take the brand colour; body copy does not.
+   *
+   * `--emphasis` is measured at AA_BODY against every surface, so this holds at
+   * any size rather than leaning on the large-text exemption — which matters,
+   * because `.indexTitle` and `.faqQuestion` below are nowhere near large text.
+   * Ink stays ground-derived, so the page still reads as words on paper and the
+   * brand is the thing the eye moves between.
+   */
+  .heading {
+    font-family: var(--display);
+    font-weight: 400;
+    line-height: var(--display-leading, 1.02);
+    letter-spacing: var(--display-tracking, -0.02em);
+    margin: 0;
+    color: var(--emphasis);
+    text-wrap: balance;
+  }
+
+  .sectionHeading {
+    font-size: clamp(1.75rem, 4.5vw, 3rem);
+  }
+
+  .eyebrow {
+    font-size: 0.6875rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 1.25rem;
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: var(--column);
+  }
+
+  .body {
+    max-width: var(--column);
+  }
+
+  .body p {
+    line-height: 1.75;
+    margin: 0 0 1.1em;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .head {
+    margin-block-end: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  /* -------------------------------------------------------------- actions */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin-block-start: 2.25rem;
+  }
+
+  /*
+   * A button and a link, not two buttons.
+   *
+   * The secondary action here is set as text with a rule under it rather than
+   * as an outlined box — on a page with no other boxes on it, an outline is a
+   * piece of furniture arriving from another skin.
+   */
+  .primary {
+    background: var(--action);
+    color: var(--on-action);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.95rem 1.75rem;
+    border: 1px solid color-mix(in oklab, var(--on-action) 24%, transparent);
+    border-radius: var(--radius);
+  }
+
+  .primary:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+  }
+
+  .primary:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  .secondary,
+  .textLink {
+    color: var(--emphasis);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding-block-end: 0.25rem;
+    border-block-end: 1px solid currentColor;
+  }
+
+  .secondary:hover,
+  .textLink:hover {
+    color: var(--text-primary);
+  }
+
+  /* ----------------------------------------------------------------- hero */
+
+  /*
+   * Deliberately shorter than the sections under it.
+   *
+   * The first version set the heading at 5.5rem and gave the hero a full
+   * section's padding, which pushed everything below it past the fold — on a
+   * page whose argument is the photographs, the opening sentence was eating the
+   * thing it was introducing. It is still the largest type on the page; it just
+   * no longer owns the whole first screen.
+   */
+  .hero {
+    padding-block: clamp(0.5rem, 2vw, 1.5rem) clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .heroWords {
+    max-width: 42rem;
+  }
+
+  /*
+   * No panel under it. There is nothing behind this type, so it is measured
+   * against the ground like every other role — the contrast contract holds by
+   * construction here rather than by the panel trick the photo-first skins need.
+   */
+  .heroHeading {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+  }
+
+  .heroSub {
+    margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    max-width: 36rem;
+  }
+
+  .hero .actions {
+    margin-block-start: 1.75rem;
+  }
+
+  /*
+   * Full bleed, under the words, carrying nothing.
+   *
+   * A room full of people is the best asset a community business has and it is
+   * exactly the photograph a showcase hero ruins: the type needs the middle
+   * third, so the middle third is where the crop and the scrim go. Here it is
+   * simply printed, edge to edge, at a shallow ratio so it reads as a band
+   * rather than as a poster.
+   */
+  .heroMedia {
+    margin-block-start: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .heroMedia img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    max-block-size: min(70vh, 40rem);
+    object-fit: cover;
+  }
+
+  @media (width < 48rem) {
+    .heroMedia img {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* ----------------------------------------------------------- mediaSplit */
+
+  /*
+   * Declared even though it carries almost nothing, because a CSS Module's
+   * type is an index signature: `styles.split` on a class that does not exist
+   * is `undefined`, the template literal swallows it, and the element ships
+   * with the word "undefined" in its class attribute and no error anywhere.
+   *
+   * `overflow-x: clip` is the real work — the picture below is pulled out of
+   * the column by a negative margin, and a guard here means that can never
+   * become a horizontal scrollbar on a narrow window.
+   */
+  .split {
+    overflow-x: clip;
+  }
+
+  .splitInner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  @media (width >= 54rem) {
+    .splitInner {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    /*
+     * The escape.
+     *
+     * A negative margin equal to the gutter plus whatever the centred measure
+     * left over, so the picture runs to the viewport edge rather than stopping
+     * at the column. `100vw` cannot be used for the calculation because it
+     * includes the scrollbar; the margin is capped instead, which is close
+     * enough at every width and never overflows.
+     */
+    .splitMedia {
+      margin-inline-end: calc(var(--gutter) * -1);
+    }
+
+    .splitRight .splitInner {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+
+    .splitRight .splitWords {
+      order: 2;
+    }
+
+    .splitRight .splitMedia {
+      order: 1;
+      margin-inline: calc(var(--gutter) * -1) 0;
+    }
+  }
+
+  .splitMedia {
+    margin: 0;
+  }
+
+  .splitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+  }
+
+  .splitHeading {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    margin-block-end: 1.5rem;
+  }
+
+  .splitAction {
+    margin-block-start: 2rem;
+  }
+
+  /* ---------------------------------------------------------------- index */
+
+  /*
+   * Numbered rows the full width of the page, hairline between.
+   *
+   * The numerals are set in the display face at heading size and held in a
+   * fixed column, so they line up as a column of figures down the left edge —
+   * which is the thing that makes this read as an index rather than as three
+   * paragraphs with digits in front of them.
+   */
+  .index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .indexRow {
+    display: grid;
+    grid-template-columns: minmax(3.5rem, 6rem) minmax(0, 1fr);
+    gap: clamp(1rem, 4vw, 3rem);
+    align-items: baseline;
+    padding-block: clamp(1.5rem, 3.5vw, 2.75rem);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .indexNumber {
+    font-family: var(--display);
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    line-height: 1;
+    color: var(--emphasis);
+  }
+
+  .indexTitle {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    line-height: var(--display-leading, 1.15);
+    letter-spacing: var(--display-tracking, -0.01em);
+    color: var(--emphasis);
+    margin: 0 0 0.6rem;
+  }
+
+  .indexText {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 44rem;
+  }
+
+  @media (width >= 54rem) {
+    .indexBody {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(1.5rem, 4vw, 3rem);
+      align-items: baseline;
+    }
+
+    .indexTitle {
+      margin-block-end: 0;
+    }
+  }
+
+  /* -------------------------------------------------------------- gallery */
+
+  /*
+   * THE STORY. Three across, and the ratio changes by ROW, never within one.
+   *
+   * The first version ran six columns with cells spanning 4/2/3/3/2/4 and a
+   * ratio solved per cell so the rows came out flat. It was the better piece of
+   * geometry and the worse photograph display: a set of phone pictures is all
+   * roughly the same shape, and a bento makes two of them small to make one of
+   * them big. Three equal frames give every photograph the same weight, which
+   * is the right answer when the photographs ARE the argument.
+   *
+   * Equal columns mean equal widths, so frames in a row only have flat bottoms
+   * if they share a ratio — hence the ratio alternating every three children
+   * rather than per cell. That is also what keeps the rhythm the varied cell
+   * sizes used to provide.
+   */
+  .story {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.8vw, 1.75rem);
+    align-items: start;
+  }
+
+  .story > :nth-child(6n + 1) img,
+  .story > :nth-child(6n + 2) img,
+  .story > :nth-child(6n + 3) img {
+    aspect-ratio: 1 / 1;
+  }
+
+  .story > :nth-child(6n + 4) img,
+  .story > :nth-child(6n + 5) img,
+  .story > :nth-child(6n + 6) img {
+    aspect-ratio: 4 / 5;
+  }
+
+  /*
+   * Two up on a tablet, one on a phone, and the ratios reset at each step — a
+   * 4:5 at full phone width is most of a screen, and a set you have to scroll
+   * past frame by frame is not a set any more.
+   */
+  @media (width < 56rem) {
+    .story {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .story img {
+      aspect-ratio: 1 / 1 !important;
+    }
+  }
+
+  @media (width < 34rem) {
+    .story {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .story img {
+      aspect-ratio: 3 / 2 !important;
+    }
+  }
+
+  .stagger {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+
+  /*
+   * Every second frame pushed down by a third of its own height, so the rows
+   * never line up. `nth-child(even)` rather than a column selector because the
+   * column count changes with the viewport and the offset should survive it.
+   */
+  @media (width >= 48rem) {
+    .stagger > :nth-child(even) {
+      margin-block-start: clamp(2rem, 6vw, 5rem);
+    }
+  }
+
+  .shot {
+    margin: 0;
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--shot-aspect, 1 / 1);
+    object-fit: cover;
+  }
+
+  .shotCaption {
+    margin-block-start: 0.85rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------------------------------------------------------------- quote */
+
+  /*
+   * Indented past the reading column on purpose. It is the one element allowed
+   * to start left of everything else, which is what gives the page a spine.
+   */
+  .quote {
+    margin: 0;
+    max-width: 52rem;
+  }
+
+  .quoteText {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.75rem, 5vw, 3.5rem);
+    line-height: var(--display-leading, 1.1);
+    letter-spacing: var(--display-tracking, -0.02em);
+    color: var(--emphasis);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .quoteText::before {
+    content: '\201C';
+  }
+
+  .quoteText::after {
+    content: '\201D';
+  }
+
+  .quoteAttr {
+    margin-block-start: 1.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .quoteRole::before {
+    content: ' · ';
+  }
+
+  /* ------------------------------------------------------------ logoStrip */
+
+  .strip {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    padding-block: clamp(1rem, 2vw, 2rem);
+    border-block: 1px solid var(--edge);
+  }
+
+  .stripHeading {
+    margin: 0;
+    font-size: 0.6875rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .stripItems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(1.5rem, 5vw, 3.5rem);
+  }
+
+  .stripItems img {
+    height: 2.25rem;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* ------------------------------------------------------------------ faq */
+
+  /*
+   * A description list, open. No disclosure triangles: on a page this short
+   * the answers are worth less than the click it takes to see them, and a
+   * closed accordion hides the exact facts a local came for.
+   */
+  .faq {
+    margin: clamp(2rem, 4vw, 3rem) 0 0;
+    border-block-start: 1px solid var(--edge);
+  }
+
+  .faqItem {
+    padding-block: clamp(1.25rem, 2.5vw, 1.75rem);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .faqQuestion {
+    font-family: var(--display);
+    font-size: 1.1875rem;
+    line-height: var(--display-leading, 1.25);
+    letter-spacing: var(--display-tracking, 0);
+    color: var(--emphasis);
+    margin: 0 0 0.5rem;
+  }
+
+  .faqAnswer {
+    margin: 0;
+    color: var(--text-secondary);
+  }
+
+  .faqAnswer p {
+    margin: 0 0 0.6em;
+    line-height: 1.65;
+  }
+
+  .faqAnswer p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ------------------------------------------------------------------ cta */
+
+  /*
+   * The one full-bleed band in the skin, and it is set in the ink rather than
+   * in the action colour so it reads as the page signing off rather than as a
+   * third button.
+   */
+  .cta {
+    background: var(--fill);
+    color: var(--on-fill);
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+  }
+
+  /* The band is already the brand colour; `--emphasis` on top of it would be
+     the heading painted out. Later in the file than `.heading`, so it wins. */
+  .ctaHeading {
+    font-size: clamp(2rem, 6vw, 4rem);
+    color: inherit;
+    max-width: 20ch;
+  }
+
+  .ctaBody {
+    margin: 1.25rem 0 0;
+    max-width: 44ch;
+    opacity: 0.85;
+    font-size: 1.0625rem;
+  }
+
+  /* On the band the primary inverts — the action colour on a filled band is
+     two saturated blocks fighting each other. */
+  .cta .primary {
+    background: var(--ground);
+    color: var(--text-primary);
+    border-color: transparent;
+  }
+
+  .cta .secondary {
+    color: inherit;
+  }
+
+  /* -------------------------------------------------------------- contact */
+
+  .contactForm {
+    margin-block-start: 2.5rem;
+  }
+}

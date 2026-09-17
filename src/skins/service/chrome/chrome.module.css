@@ -1,0 +1,359 @@
+/*
+ * Service chrome.
+ *
+ * A local service business is bought on reassurance, not atmosphere: can I
+ * reach you, are you real, what does it cost, when can you come. So the phone
+ * number is in the chrome at every breakpoint, the header is solid rather than
+ * translucent, and the rhythm is tighter than the venue's — this page is read
+ * standing up, not lingered over.
+ *
+ * Every axis is deliberately the opposite of the venue skin. If the two ever
+ * start to look related, the three-skin test has stopped meaning anything.
+ */
+
+@layer skin {
+  .page {
+    --gutter: clamp(1rem, 4vw, 3rem);
+    /*
+     * The page's working width — a proportion with a cap, not a fixed number.
+     *
+     * Prose keeps its own reading measure (`.text`, 46rem); this is how much
+     * page there is, and the two answer different questions.
+     *
+     * 84rem is 1344px and never more, so the wider the screen the more of it
+     * is margin — at which point the page stops looking measured and starts
+     * looking narrow. 92vw keeps the margin proportional; the rem value is
+     * still there as the ceiling, so it cannot sprawl on a 5K display.
+     */
+    --measure: min(92vw, 96rem);
+    --section: clamp(2.75rem, 6vw, 5rem);
+    /* Raised from 4rem to give a logo somewhere to be. See .brandMark. */
+    --header-h: 4.75rem;
+    --radius: 0.375rem;
+
+    /*
+     * The skin's stack is the DEFAULT, not the value. A site naming a display
+     * face in its config sets `--display-site` on <html>; this reads through to
+     * it and falls back here when it is unset. Set the other way round the skin
+     * would win, because it is declared further down the tree.
+     */
+    --display: var(--display-site, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--text-primary);
+  }
+
+  .page :global(:target) {
+    scroll-margin-block-start: calc(var(--header-h) + 1rem);
+  }
+
+  /*
+   * Measure PLUS the gutters, deliberately.
+   *
+   * A section is `padding-inline: var(--gutter)` with a `--measure`-wide box
+   * centred inside it, so its content line sits one gutter in from where a
+   * `--measure`-wide chrome puts it. The header logo and the hero heading then
+   * start at different x, which reads as a wobble rather than a decision. The
+   * calc makes the two agree at every width.
+   */
+  .inner {
+    width: 100%;
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* -------------------------------------------------------------- utility */
+
+  /*
+   * The band above the header. Unfashionable, and it is the single clearest
+   * signal that a business answers the phone.
+   */
+  /*
+   * The accent's only structural job.
+   *
+   * `--swatch-accent` is the client's second colour untouched, and it is the
+   * one role the ladder deliberately exempts from contrast — so it may only
+   * be used where nothing is being read. A rule is exactly that. It is also
+   * the only way an accent reaches a page in this skin at all: `--emphasis`
+   * resolves to `--fill`, which on a light ground is always the darker of the
+   * two supplied colours, so a bright second colour otherwise has nowhere to
+   * go.
+   */
+  .utility {
+    background: var(--fill);
+    color: var(--on-fill);
+    font-size: 0.8125rem;
+    border-block-start: 4px solid var(--swatch-accent);
+  }
+
+  .utilityInner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    min-height: 2.5rem;
+    padding-block: 0.4rem;
+  }
+
+  .utility a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .utility a:hover {
+    text-decoration: underline;
+  }
+
+  .utilityNote {
+    opacity: 0.85;
+  }
+
+  /* --------------------------------------------------------------- header */
+
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .headerInner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--header-h);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  /*
+   * Fitted inside a box, not pinned to a height.
+   *
+   * `height: 2rem` was written for a square-ish mark and is wrong for every
+   * other shape. A client's logo is usually a LOCKUP — type beside a symbol, or
+   * type stacked under one — and constraining a lockup by height alone sets the
+   * words inside it at a fraction of that height. Frontier's renders its whole
+   * name in about ten pixels, which is not a small logo, it is an unreadable
+   * one.
+   *
+   * max-height AND max-width with both dimensions auto means the mark scales to
+   * fit the box and keeps its aspect: a tall mark is limited by the height, a
+   * wide one by the width, and neither is ever squashed. Pinning `height` with a
+   * `max-width` would distort the wide case instead.
+   *
+   * The bar was raised to 4.75rem to make room. A header is mostly there to
+   * carry the identity; giving the mark two thirds of it is not generous.
+   */
+  .brandMark {
+    height: auto;
+    width: auto;
+    max-height: 3.25rem;
+    max-width: 13rem;
+    border-radius: var(--radius);
+  }
+
+  /* Separator drawn, not typed, so `descriptor` stays a plain word in config
+     and nobody has to remember to put an interpunct in front of it. */
+  .brandDescriptor {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    letter-spacing: 0;
+    color: var(--text-secondary);
+  }
+
+  .brandDescriptor::before {
+    content: '·';
+    margin-inline-end: 0.6rem;
+    color: var(--text-muted);
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
+  }
+
+  .navLink {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding-block: 0.5rem;
+  }
+
+  .navLink:hover {
+    color: var(--text-primary);
+  }
+
+  /*
+   * The call to action is the third colour, not the ink.
+   *
+   * On `--fill` it is a near-black rectangle sitting under a near-black
+   * wordmark, and a header with two dark blocks in it has no primary action —
+   * it has two logos. `--action` runs the third through the same polarity
+   * machinery as the fill, so this is measured, not decorated.
+   */
+  .action {
+    background: var(--action);
+    color: var(--on-action);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.7rem 1.15rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+  }
+
+  .action:hover {
+    background: var(--action-hover);
+    color: var(--on-action-hover);
+  }
+
+  .action:active {
+    background: var(--action-active);
+    color: var(--on-action-active);
+  }
+
+  @media (width < 46rem) {
+    .nav {
+      display: none;
+    }
+  }
+
+  /* ----------------------------------------------------------------- main */
+
+  /*
+   * Targeted as an element, not a class.
+   *
+   * PageBySlug owns the <main> and renders it bare, so a .main class in a skin
+   * matches nothing — which is exactly what happened here: this rhythm rule sat
+   * inert while every gap on the page came from whatever the sections happened
+   * to bring with them. Styling the element keeps the seam intact; the
+   * alternative is a Main component on SkinChrome, which is a contract change
+   * for no gain.
+   */
+  .page > main {
+    flex: 1;
+  }
+
+  /*
+   * Banded, not floated.
+   *
+   * Sections used to be separated by a margin, which makes one continuous
+   * sheet of ground with content adrift on it — no section has a top or a
+   * bottom, so a heading reads as belonging to whatever is nearest. Each
+   * section now owns its vertical padding and every other one sits on
+   * `--surface` between hairlines, so the page has joints you can see.
+   *
+   * The hero is excluded: it brings its own full-bleed padding and its own
+   * background, and banding it would box the photograph.
+   */
+  /*
+   * Zero specificity on purpose: any section that paints itself — the CTA
+   * band, a hero — keeps its own background and padding without needing an
+   * override, because a single class already beats this.
+   */
+  :where(.page > main) > :where(:not(:first-child)) {
+    padding-block: var(--section);
+  }
+
+  :where(.page > main) > :where(:nth-child(even)) {
+    background: var(--surface);
+    border-block: 1px solid var(--edge);
+  }
+
+  /* --------------------------------------------------------------- footer */
+
+  .footer {
+    border-block-start: 1px solid var(--edge);
+    background: var(--surface);
+    padding-block: var(--section) 1.5rem;
+  }
+
+  .footerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .footerName {
+    font-family: var(--display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+  }
+
+  .footerTagline {
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 24rem;
+    font-size: 0.9375rem;
+  }
+
+  .footerHeading {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: 0 0 0.6rem;
+  }
+
+  .footerList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .footerList a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .footerList a:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+
+  .colophon {
+    margin-block-start: var(--section);
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--edge);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+  }
+}

@@ -1,0 +1,10 @@
+/*
+ * Layer order is a public contract. A client override in the last layer beats
+ * everything above it without a specificity fight. Changing this order can
+ * break a client override and is therefore a MAJOR version bump.
+ */
+@layer reset, tokens, base, components, skin, overrides;
+
+@import './tokens.css';
+@import './base.css';
+@import '../ui-kit/kit.css';

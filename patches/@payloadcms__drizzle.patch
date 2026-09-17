@@ -1,0 +1,12 @@
+--- a/dist/upsertRow/insertArrays.js
++++ b/dist/upsertRow/insertArrays.js
+@@ -78,7 +78,8 @@
+                 adapter,
+                 arrays: row.arrays,
+                 db,
+-                parentRows: insertedRows
++                parentRows: insertedRows,
++                uuidMap
+             });
+         }
+     }

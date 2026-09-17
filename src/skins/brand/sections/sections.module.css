@@ -1,0 +1,792 @@
+/*
+ * Brand section renderers.
+ *
+ * Bands, not sections. Each one paints edge to edge and the colour change is
+ * the separation — which is why the chrome sets no gap between them. The
+ * alternation is deliberate and shallow: ground, surface, fill, and back.
+ */
+
+@layer skin {
+  .band {
+    padding-block: var(--section);
+    padding-inline: var(--gutter);
+  }
+
+  .bandSurface {
+    background: var(--surface);
+  }
+
+  /*
+   * A full-fill band. --on-fill is the token that has already been measured
+   * against --fill, so text placed here keeps the contrast guarantee instead of
+   * inheriting a colour picked for a different ground.
+   */
+  .bandFill {
+    background: var(--fill);
+    color: var(--on-fill);
+  }
+
+  /*
+   * The OTHER brand colour, full width.
+   *
+   * A skin described as colour blocked had exactly one colour to block with,
+   * which is not a scheme, it is a highlight. `--fill-alt` is the colour the
+   * ladder did not select as ink, and `--on-fill-alt` is already in the
+   * contract at 4.5 — so this is a second plane that costs no new guarantee.
+   *
+   * It matters most for the palettes this skin is actually for: a brand whose
+   * loud colour cannot be type at all still gets to own half the page, because
+   * a plane is not type.
+   */
+  .bandAlt {
+    background: var(--fill-alt);
+    color: var(--on-fill-alt);
+  }
+
+  .inner {
+    width: 100%;
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
+  .centred {
+    max-width: 46rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .heading {
+    font-family: var(--display);
+    font-weight: 800;
+    letter-spacing: var(--display-tracking, -0.03em);
+    line-height: var(--display-leading, 1.02);
+    text-transform: uppercase;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin: 0 0 1.25rem;
+  }
+
+  .lede {
+    font-size: clamp(1rem, 1.6vw, 1.1875rem);
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .body p {
+    line-height: 1.75;
+    margin: 0 0 1.1em;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* -------------------------------------------------------------- actions */
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 2rem;
+  }
+
+  .centred .actions {
+    justify-content: center;
+  }
+
+  .primary,
+  .secondary {
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    border: 2px solid currentColor;
+  }
+
+  /*
+   * Two rules, both using a token pair the contrast contract has already
+   * measured. A cleverer version using currentColor and blend modes would put
+   * the label's colour outside anything the suite can assert, which is exactly
+   * the guarantee this system sells.
+   */
+  .primary {
+    background: var(--fill);
+    color: var(--on-fill);
+    border-color: var(--fill);
+  }
+
+  .bandFill .primary {
+    background: var(--ground);
+    color: var(--text-primary);
+    border-color: var(--ground);
+  }
+
+  .secondary {
+    background: transparent;
+  }
+
+  .secondary:hover,
+  .primary:hover {
+    opacity: 0.82;
+  }
+
+  /* ----------------------------------------------------------------- hero */
+
+  .hero {
+    position: relative;
+    min-height: min(44rem, 84svh);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    overflow: hidden;
+    padding-block: var(--section);
+  }
+
+  .heroImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .heroScrim {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--ground) 62%, transparent);
+  }
+
+  .heroInner {
+    position: relative;
+  }
+
+  /*
+   * 10vw was 144px at 1440 and it read as a poster rather than as a heading —
+   * three words a line and the sub sixty per cent of the way down the screen.
+   */
+  .heroHeading {
+    font-size: clamp(2.25rem, 6.5vw, 5rem);
+    max-width: 16ch;
+    margin-inline: auto;
+  }
+
+  /*
+   * NO PHOTOGRAPH, SO THE COLOUR DOES THE WORK.
+   *
+   * A colour-blocked skin whose type-only hero is a page of paper has given up
+   * the one thing it is for. The plane is `--fill-alt` and the type is
+   * `--on-fill-alt`, which the contract measures at 4.5 — so this is the loud
+   * colour at full size with the guarantee intact.
+   *
+   * It is also the only way a brand like Zmirk's gets an orange headline at
+   * all: #ff6400 AS TYPE on their cream measures 2.67:1, under even the
+   * large-text bar of 3.0. Orange letters are not available; an orange screen
+   * with their own ink on it is.
+   */
+  .heroPlain {
+    background: var(--fill-alt);
+    color: var(--on-fill-alt);
+    min-height: min(30rem, 62svh);
+  }
+
+  .heroSub {
+    max-width: 40ch;
+    margin: 1.75rem auto 0;
+  }
+
+  /*
+   * `split` — type one side, photograph the other.
+   *
+   * The one layout in this skin that is not centred, and it is centred
+   * everywhere else for a reason — so this needs a reason of its own. It is
+   * resolution. A full-width band is a 2x upscale of anything a small business
+   * actually owns; half a column is close to native. When the pictures are
+   * ordinary this is the layout that flatters them, and a centred column beside
+   * a photograph reads as two things that were laid out separately.
+   */
+  .heroSplit {
+    min-height: 0;
+    display: block;
+    text-align: start;
+  }
+
+  .heroSplitGrid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  @media (width >= 54rem) {
+    .heroSplitGrid {
+      grid-template-columns: 1.05fr 1fr;
+    }
+  }
+
+  .heroSplit .heroHeading {
+    font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+    max-width: 15ch;
+    margin-inline: 0;
+  }
+
+  .heroSplit .heroSub {
+    margin-inline: 0;
+  }
+
+  .heroSplit .actions {
+    justify-content: flex-start;
+  }
+
+  .heroSplitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-3);
+  }
+
+  /*
+   * `mark` — the photograph full width with nothing over it, type underneath.
+   *
+   * For the business whose signage IS the strongest thing it owns. A scrim over
+   * a shopfront mutes the exact colour that makes it recognisable, and this
+   * skin's whole argument is colour. Splitting the two also means the type has
+   * a measured ground under it rather than a photograph.
+   */
+  .heroMark {
+    padding: 0;
+    min-height: 0;
+    display: block;
+    text-align: start;
+  }
+
+  .heroMarkImage {
+    display: block;
+    width: 100%;
+    height: clamp(17rem, 52svh, 34rem);
+    object-fit: cover;
+  }
+
+  .heroMarkBody {
+    padding-block: var(--section);
+    padding-inline: var(--gutter);
+  }
+
+  /* ----------------------------------------------------------- mediaSplit */
+
+  .split {
+    display: grid;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  @media (width >= 52rem) {
+    .split {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .splitRight .splitMedia {
+      order: 2;
+    }
+  }
+
+  .splitMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .splitHeading {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    margin-block-end: 1.5rem;
+  }
+
+  /* ----------------------------------------------------------- featureGrid */
+
+  .gridHeading {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  /* Geometry comes from components/layout; these are the skin's own bits. */
+  .grid {
+    margin-block-start: clamp(2.5rem, 5vw, 4rem);
+    text-align: center;
+  }
+
+  /* No heading above it, so nothing to sit under. */
+  .grid:first-child {
+    margin-block-start: 0;
+  }
+
+  /*
+   * The set in one column, its picture in the other.
+   *
+   * Two things at once: a stack of doors has nothing to look at on its own,
+   * and a photograph in half a column is at close to its native size. Most of
+   * these businesses own nothing above 1000px, so half width is not a
+   * compromise, it is the largest honest size.
+   */
+  .gridWithMedia {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+    grid-template-columns: 1fr;
+    margin-block-start: clamp(2rem, 4vw, 3rem);
+  }
+
+  .gridWithMedia > .grid {
+    margin-block-start: 0;
+  }
+
+  @media (width >= 54rem) {
+    .gridWithMedia {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .gridMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-3);
+  }
+
+  /*
+   * A LIST OF DOORS, not a grid of features: marker beside the words rather
+   * than above them, and the title carrying the weight. Reached when a stacked
+   * set is drawn with discs.
+   */
+  .gridList {
+    text-align: start;
+  }
+
+  .gridList .card {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  .gridList .cardMedia {
+    margin: 0;
+    flex: 0 0 clamp(4rem, 8vw, 5.5rem);
+    max-width: none;
+  }
+
+  .gridList .cardTitle {
+    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    letter-spacing: -0.02em;
+    margin-block-end: 0.25rem;
+  }
+
+  .gridList .cardBody {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .gridList .cardLink {
+    display: none;
+  }
+
+  /*
+   * INTERACTIVE, and it has to look it. The whole card is the target; the disc
+   * tips and grows and the title underlines, which between them say "this is a
+   * thing you press" without a border or a button.
+   */
+  .card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a.card:hover .frameDisc,
+  a.card:focus-visible .frameDisc {
+    transform: scale(1.06) rotate(-4deg);
+  }
+
+  a.card:hover .cardTitle,
+  a.card:focus-visible .cardTitle {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 0.09em;
+  }
+
+  a.card:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 0.75rem;
+    border-radius: var(--radius-2);
+  }
+
+  .cardIndex {
+    font-family: var(--display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    opacity: 0.55;
+    margin: 0 0 1rem;
+  }
+
+  .cardTitle {
+    font-family: var(--display);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    font-size: 1.125rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .cardBody {
+    margin: 0;
+    line-height: 1.65;
+    opacity: 0.85;
+  }
+
+  .cardLink {
+    margin: 1.25rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* A span, not an anchor — the whole card is the link. */
+  .cardLink span {
+    display: inline-block;
+    border-block-end: 2px solid var(--emphasis);
+    padding-block-end: 0.2rem;
+  }
+
+  /*
+   * A card's picture. `mat` is not drawn here — a skin that does not implement
+   * a frame falls through to flush, which is the right failure: the photograph
+   * is still on the page.
+   */
+  .cardMedia {
+    margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+    max-width: 15rem;
+  }
+
+  .cardMedia img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  /*
+   * The disc. Colour comes in as --pop, set per card by the renderer from the
+   * wheel in tokens.css, so the arrangement cycles rather than repeating.
+   *
+   * The picture is inset and circular so the disc reads as a disc and not as a
+   * ring — a hairline of colour around a square photograph looks like a
+   * mistake. Nothing is ever typed on it; see tokens.css.
+   */
+  .frameDisc {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+    background: var(--pop, var(--surface));
+    transition: transform 180ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .frameDisc {
+      transition: none;
+    }
+
+    a.card:hover .frameDisc,
+    a.card:focus-visible .frameDisc {
+      transform: none;
+    }
+  }
+
+  .frameDisc img {
+    width: 76%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+  }
+
+  /* -------------------------------------------------------------- gallery */
+
+  /*
+   * A wall, not a grid of pictures. The gutter is hairline so the set reads as
+   * one colour block the way the bands do, which is the only thing this skin
+   * does consistently.
+   */
+  .gallery {
+    margin-block-start: clamp(2.5rem, 5vw, 4rem);
+    scroll-padding-inline: var(--gutter);
+  }
+
+  .shot {
+    margin: 0;
+  }
+
+  .shot img {
+    display: block;
+    width: 100%;
+    /* Set per block by the renderer; `auto` is the "as shot" case. */
+    aspect-ratio: var(--shot-aspect, 1 / 1);
+    object-fit: cover;
+  }
+
+  /*
+   * Under the photograph, on the band, rather than over it on a scrim. Text on
+   * a photograph has no measurable contrast and this skin's bands are the one
+   * place the ladder can still be asserted.
+   */
+  .shotCaption {
+    padding-block-start: 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    line-height: 1.5;
+  }
+
+  /* ---------------------------------------------------------------- quote */
+
+  .quoteText {
+    font-family: var(--display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.5rem, 4.5vw, 3rem);
+    line-height: 1.14;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .quoteAttr {
+    margin: 2rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* ------------------------------------------------------------ logoStrip */
+
+  .stripHeading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0 0 2.5rem;
+    text-align: center;
+  }
+
+  .stripItems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+
+  .stripItems img {
+    display: block;
+    height: clamp(2rem, 5vw, 3.25rem);
+    width: auto;
+  }
+
+  /* ------------------------------------------------------------------ faq */
+
+  .faqHeading {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    margin-block-end: 2.5rem;
+    text-align: center;
+  }
+
+  .faqItem {
+    border-block-start: 1px solid currentColor;
+    opacity: 0.999;
+  }
+
+  .faqItem:last-of-type {
+    border-block-end: 1px solid currentColor;
+  }
+
+  .faqQuestion {
+    cursor: pointer;
+    list-style: none;
+    padding-block: 1.35rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-size: 1.0625rem;
+  }
+
+  .faqQuestion::-webkit-details-marker {
+    display: none;
+  }
+
+  .faqQuestion::after {
+    content: '+';
+    font-size: 1.375rem;
+    line-height: 1;
+  }
+
+  .faqItem[open] .faqQuestion::after {
+    content: '−';
+  }
+
+  .faqAnswer {
+    padding-block-end: 1.5rem;
+    max-width: 60ch;
+    opacity: 0.85;
+  }
+
+  /* ------------------------------------------------------------------ cta */
+
+  .ctaHeading {
+    font-size: clamp(2rem, 6vw, 4rem);
+  }
+
+  .ctaBody {
+    margin: 1.25rem auto 0;
+    max-width: 40ch;
+  }
+
+  /* -------------------------------------------------------------- contact */
+
+  .contactHeading {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .contactBody {
+    margin-block-start: 1.25rem;
+  }
+
+  /*
+   * The skin's whole say over the shared form: where it sits and how wide.
+   * Never what is inside it — that is src/features/contact/contact-form.module.css,
+   * and reaching into it from here breaks every skin at once. Same rule as the kit.
+   */
+  .contactForm {
+    margin-block-start: 2.5rem;
+    margin-inline: auto;
+    max-width: 34rem;
+    /* The band centres its prose. A form's labels still have to read left. */
+    text-align: start;
+  }
+
+  /* --------------------------------------------------- module: menu/prices */
+
+  .listHeading {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    text-align: center;
+  }
+
+  .list {
+    max-width: 44rem;
+    margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  }
+
+  .listGroup + .listGroup {
+    margin-block-start: 3rem;
+  }
+
+  /*
+   * A chip, not a caption. A long list on a colour-blocked site is the one
+   * place the colour goes missing, and a quiet grey label down a menu page
+   * makes it read like somebody else's template. The pair is `--fill-alt` and
+   * `--on-fill-alt`, which the contract measures — so this is the brand colour
+   * carrying type in the one way it is allowed to.
+   */
+  .listGroupHeading {
+    display: inline-block;
+    background: var(--fill-alt);
+    color: var(--on-fill-alt);
+    border-radius: var(--radius-full);
+    padding: 0.45rem 1.1rem 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 0 0 1.25rem;
+  }
+
+  .listGroup {
+    text-align: center;
+  }
+
+  .listGroup .listRow {
+    text-align: start;
+  }
+
+  .listGroupNote {
+    margin: -0.5rem 0 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    opacity: 0.75;
+  }
+
+  .listRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1rem;
+    border-block-start: 1px solid currentColor;
+  }
+
+  .listName {
+    font-weight: 700;
+  }
+
+  .listDesc {
+    margin: 0.35rem 0 0;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+
+  .listValue {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /*
+   * The line under a list — allergen wording, surcharges, the print link.
+   *
+   * menu.tsx has referenced this class since it was written and this file never
+   * declared it, so it resolved to `undefined` and disappeared into a template
+   * literal. A CSS Module's type is an index signature, which is why nothing
+   * caught it; same trap as components/layout.
+   */
+  .contactNote {
+    max-width: 44rem;
+    margin: 2rem auto 0;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    opacity: 0.75;
+  }
+
+  .contactNote a {
+    color: inherit;
+  }
+}
