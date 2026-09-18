@@ -42,17 +42,29 @@ const siteConfig: SiteConfig = {
      * research is an absence in the research, not in the world.
      */
     hours: ['Wed – Sat  5pm – 9:30pm', 'Sun – Tue  Closed'],
-    logo: '/demo-nug-logo.png',
     timezone: 'Australia/Brisbane',
   },
   nav: [
     { label: 'Menu', href: '/menu' },
     { label: 'The store', href: '/store' },
   ],
-  /* No booking link supplied — their bio says "find the below link" and the
-     link did not come across. Phone is honest and works; swap it the moment
-     the real one turns up. */
-  cta: { label: 'Book a table', href: 'tel:0468669391' },
+  /*
+   * THE BOOKING LINK IS REAL AND IT IS NOW BOOK IT. An earlier pass could not
+   * follow their bio link and fell back to the phone number, which on a laptop
+   * is a dead control — the one thing a mock cannot have.
+   *
+   * Tracking parameters stripped: utm_source, utm_medium, utm_content and an
+   * fbclid. Those belong to whoever clicked their bio, not to this site.
+   *
+   * ⚠️ NO `logo`. Theirs is a 150x150 Instagram avatar with no alpha channel
+   * and a cream tile baked in, so on the orange bar it showed as a pale square
+   * and the letters inside it were roughly forty pixels wide. There is no
+   * header height that rescues that. Their wordmark is plain caps — the same
+   * letterforms etched on their own window — so the name is set as TYPE in the
+   * display face instead: sharp at any size, and legible. Put a logo back the
+   * day somebody sends a real file.
+   */
+  cta: { label: 'Book a table', href: 'https://bookings.nowbookit.com/?accountid=8236eb6d-20b8-404f-9bf2-3173b106a232&venueid=13685&theme=light&colors=hex%2Ce0d4ac' },
   demo: true,
 }
 

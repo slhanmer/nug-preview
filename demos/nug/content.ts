@@ -1,7 +1,8 @@
 import { defineDemo } from '@/seed/define'
 import { richText } from '@/seed/lexical'
 
-const PHONE = 'tel:0468669391'
+const BOOKINGS =
+  'https://bookings.nowbookit.com/?accountid=8236eb6d-20b8-404f-9bf2-3173b106a232&venueid=13685&theme=light&colors=hex%2Ce0d4ac'
 const MAPS =
   'https://www.google.com/maps/search/?api=1&query=694+Ann+St+Bakery+Lane+Fortitude+Valley+QLD+4006'
 const INSTAGRAM = 'https://www.instagram.com/nug.generalstore/'
@@ -42,8 +43,9 @@ const INSTAGRAM = 'https://www.instagram.com/nug.generalstore/'
  *   - Anything the store stocks beyond what is visible in their own two
  *     photographs: no sourdough, no brioche, no dried pasta, no herbs.
  *   - Any claim about who their customers are or what they have seen.
- *   - A booking link. Their bio points at one and it did not come across, so
- *     every "book" action on the site is the published phone number.
+ *   - Anything about the booking system beyond the link itself. The Now Book
+ *     It URL is theirs, off their own bio, with its tracking parameters
+ *     stripped.
  *   - Ratings, review counts, follower counts. Nobody read one.
  */
 export default defineDemo({
@@ -148,7 +150,7 @@ export default defineDemo({
           sub: 'Dinner Wednesday to Saturday, 5pm until 9:30pm. A general store the rest of the time.',
           image: ref.image('room'),
           primaryCta: { label: 'See the menu', href: '/menu' },
-          secondaryCta: { label: 'Book a table', href: PHONE },
+          secondaryCta: { label: 'Book a table', href: BOOKINGS },
         },
 
         {
@@ -216,7 +218,7 @@ export default defineDemo({
           blockType: 'cta',
           heading: 'Wednesday to Saturday',
           body: '5pm until 9:30pm. 694 Ann St, Bakery Lane. Booking is the safe way in.',
-          primaryCta: { label: 'Book a table', href: PHONE },
+          primaryCta: { label: 'Book a table', href: BOOKINGS },
           secondaryCta: { label: 'Find us', href: MAPS },
         },
 
@@ -239,13 +241,22 @@ export default defineDemo({
           heading: 'The menu',
           sub: 'Made to be shared. Order a few things between you and keep going.',
           image: ref.image('tortellini'),
-          primaryCta: { label: 'Book a table', href: PHONE },
+          primaryCta: { label: 'Book a table', href: BOOKINGS },
         },
         {
           blockType: 'menu',
           menu: ref.menu('dinner'),
           heading: 'Dinner',
-          showPrintLink: true,
+          /*
+           * OFF, and it is not a preference.
+           *
+           * The link goes to /menu/print, which redirects anyone without an
+           * account to the Payload login. A customer who taps "Print this
+           * list" on a restaurant's website and is asked to create an account
+           * has found a broken site — and on a mock, they have found OURS. It
+           * is a staff tool and it does not belong on a page a stranger reads.
+           */
+          showPrintLink: false,
         },
         {
           blockType: 'contact',
