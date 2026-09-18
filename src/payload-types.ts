@@ -248,7 +248,7 @@ export interface HeroBlock {
   /**
    * Showcase needs a wide, sharp photograph. Split suits portrait phone shots, which is most of them.
    */
-  layout?: ('showcase' | 'split' | 'mark' | 'plain') | null;
+  layout?: ('showcase' | 'split' | 'window' | 'mark' | 'plain') | null;
   primaryCta?: {
     label?: string | null;
     href?: string | null;

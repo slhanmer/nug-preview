@@ -90,19 +90,28 @@
    * tile vanish into it and leaves the artwork, which is what the logo would
    * look like if it had been supplied with an alpha channel.
    *
-   * `--action` and `--on-action` are a measured pair, so the nav is legible by
-   * construction. That is the only reason this is allowed to be a slab.
+   * IT FOLLOWS THE PAGE. It was `--action`, then `--fill`, and both were
+   * wrong for the same reason: they are brand colours, and which brand colour
+   * they resolve to FLIPS WITH THE THEME. On a light ground the ladder picks
+   * the darker of the two as `--fill`, on a dark ground the lighter — so a bar
+   * pinned to it is ink on one site and the loud colour on the next, without
+   * anyone choosing that. Nug flipped to dark and the masthead turned ochre,
+   * which also washed out a cream mark that had been legible an hour earlier.
+   *
+   * `--surface` is the ground's own raised plane, so the bar is the page in
+   * both themes and the rule under it is what separates them. The buttons keep
+   * the colour; a masthead does not need to shout to be found.
    */
   .header {
     position: sticky;
     inset-block-start: 0;
     z-index: 10;
-    background: var(--action);
-    color: var(--on-action);
+    background: var(--surface);
+    color: var(--text-primary);
     /* Against the page rather than against itself — the bar and the ground can
        be the same lightness (Fieldy's measures 1.02:1), and then the only
        thing separating them is this line. */
-    border-block-end: 1px solid color-mix(in oklab, var(--on-action) 24%, transparent);
+    border-block-end: 1px solid var(--edge);
   }
 
   .headerInner {
@@ -121,7 +130,7 @@
     /* Set to be read across a room, not to balance the nav. */
     font-size: clamp(1.5rem, 2.6vw, 2.125rem);
     letter-spacing: 0.01em;
-    color: var(--on-action);
+    color: var(--text-primary);
     text-decoration: none;
   }
 
@@ -145,17 +154,28 @@
   }
 
   /* Separator drawn, not typed, so `descriptor` stays a plain word in config. */
+  /*
+   * The painted face, with the tracking and the caps TAKEN OFF.
+   *
+   * Every rule in this bar was written for a geometric set in small uppercase
+   * and tracked wide. A hand-lettered face under those settings is the one
+   * thing it must never be: a script has joins, and letterspacing pulls them
+   * apart into separate marks. Sentence case, no tracking, and larger — a hand
+   * needs more size than a grotesk to read at the same authority.
+   */
   .brandDescriptor {
-    font-family: var(--display);
-    font-size: 1rem;
-    letter-spacing: 0.02em;
-    color: color-mix(in oklab, var(--on-action) 80%, transparent);
+    font-family: var(--signage, var(--display));
+    font-size: clamp(1.6rem, 2vw, 2rem);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-secondary);
   }
 
   .brandDescriptor::before {
     content: '·';
-    margin-inline-end: 0.65rem;
-    color: color-mix(in oklab, var(--on-action) 55%, transparent);
+    font-size: 1.25em;
+    margin-inline-end: 0.5rem;
+    color: var(--text-muted);
   }
 
   .srOnly {
@@ -176,32 +196,43 @@
     gap: clamp(1rem, 3vw, 2.25rem);
   }
 
+  /*
+   * The nav is the ACTION colour, which only works because the bar is the page
+   * now. On the old coloured slab this would have been the loud colour on the
+   * loud colour; against `--surface` it measures like any other link and it is
+   * the one place the brand gets to speak in the chrome.
+   *
+   * Hover goes to `--text-primary` rather than `--action-hover`: on a dark bar
+   * the hover state DROPS lightness, so the ochre would lose contrast on the
+   * interaction that is meant to confirm it. Cream gains it.
+   */
   .navLink {
-    color: color-mix(in oklab, var(--on-action) 82%, transparent);
+    color: var(--action);
     text-decoration: none;
-    font-size: 0.8125rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding-block: 0.5rem;
+    font-family: var(--signage, inherit);
+    font-size: clamp(1.5rem, 1.9vw, 1.9rem);
+    letter-spacing: 0;
+    text-transform: none;
+    padding-block: 0.35rem;
     border-block-end: 1px solid transparent;
   }
 
   .navLink:hover {
-    color: var(--on-action);
+    color: var(--text-primary);
     border-block-end-color: currentColor;
   }
 
   /*
    * The one call to action that is NOT the action colour, and it has to be.
    *
-   * Everywhere else on the page the primary button is `--action`. Here it
-   * would be that colour on a bar of that colour — a button with no edges. So
-   * it inverts against its own band, exactly as the CTA band's button does,
-   * and `--fill` / `--on-fill` are already a measured pair.
+   * The inversion this used to do is no longer needed: the bar is `--fill`
+   * now, so the action colour is already the contrasting one and the button
+   * can simply BE a button. It is the same control here as in the page, which
+   * is what a visitor is entitled to assume.
    */
   .action {
-    background: var(--fill);
-    color: var(--on-fill);
+    background: var(--action);
+    color: var(--on-action);
     text-decoration: none;
     font-size: 0.8125rem;
     letter-spacing: 0.12em;
@@ -211,35 +242,51 @@
   }
 
   .action:hover {
-    background: var(--fill-hover);
-    color: var(--on-fill-hover);
+    background: var(--action-hover);
+    color: var(--on-action-hover);
   }
 
   .action:active {
-    background: var(--fill-active);
-    color: var(--on-fill-active);
+    background: var(--action-active);
+    color: var(--on-action-active);
   }
 
   /*
-   * On a phone: the mark and what the business is, and nothing else.
+   * On a phone: the mark, what the business is, and A WAY TO THE OTHER PAGES.
    *
-   * The booking button goes, which is the opposite of what this used to do.
-   * The hero's own primary action sits a few hundred pixels below it on the
-   * same screen — two identical buttons one scroll apart are not two chances
-   * at a tap, they are a header wrapping onto two lines to repeat the page.
+   * The booking button still goes, and the original reasoning holds — every
+   * page's hero carries its own primary action a few hundred pixels below, and
+   * two identical buttons one scroll apart are not two chances at a tap.
    *
-   * Losing it is also what buys the descriptor room to sit on one line, so it
-   * stays: on a mark that spells only the name, "Ristorante · Pizzeria · Caffè"
-   * is the half a stranger actually needs.
+   * THE NAV GOING WITH IT WAS THE MISTAKE. It left a phone with no route
+   * between pages at all: from the menu you could not reach the store without
+   * scrolling to the footer, and a stranger does not know the footer repeats
+   * the nav. It takes a second row instead, which is affordable here because
+   * this is a three-page site — a business with eight pages needs a disclosure
+   * and this is not that.
    */
   @media (width < 40rem) {
-    .nav,
     .action {
       display: none;
     }
 
+    .headerInner {
+      flex-wrap: wrap;
+      padding-block: 0.6rem;
+      row-gap: 0.35rem;
+    }
+
+    .nav {
+      flex-basis: 100%;
+      gap: 1.5rem;
+    }
+
     .brandDescriptor {
-      font-size: 0.875rem;
+      font-size: 1.15rem;
+    }
+
+    .navLink {
+      font-size: 1.25rem;
     }
   }
 

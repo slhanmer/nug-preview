@@ -36,7 +36,17 @@ type ContactEnv = {
 function readEnv(): { env: ContactEnv } | { missing: string[] } {
   const resendKey = process.env.RESEND_API_KEY
   const from = process.env.CONTACT_FROM
-  const to = process.env.CONTACT_TO ?? siteConfig.business.email
+  /*
+   * A DEMO NEVER FALLS BACK TO THE BUSINESS. `business.email` is the right
+   * default for a live site and the wrong one for a mock: the business has
+   * agreed to nothing, and the first they would hear of this site is an
+   * enquiry from it landing in their inbox. On a demo the address has to be
+   * ours, stated in CONTACT_TO, or the form refuses and shows the phone
+   * number — which is a visible failure rather than a silent one.
+   */
+  const to = siteConfig.demo
+    ? process.env.CONTACT_TO
+    : (process.env.CONTACT_TO ?? siteConfig.business.email)
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -54,7 +64,11 @@ function readEnv(): { env: ContactEnv } | { missing: string[] } {
   const missing = [
     resendKey ? '' : 'RESEND_API_KEY',
     from ? '' : 'CONTACT_FROM',
-    to ? '' : 'CONTACT_TO (or business.email in site.config.ts)',
+    to
+      ? ''
+      : siteConfig.demo
+        ? 'CONTACT_TO (required on a demo — it must not reach the business)'
+        : 'CONTACT_TO (or business.email in site.config.ts)',
     needsTurnstile && !turnstileSecret ? 'TURNSTILE_SECRET_KEY' : '',
     needsTurnstile && !siteKey ? 'NEXT_PUBLIC_TURNSTILE_SITE_KEY' : '',
   ].filter(Boolean)

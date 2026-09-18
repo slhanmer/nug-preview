@@ -63,6 +63,19 @@ export type SiteStyle = {
    * for most of these and wrong for a business whose identity IS its signage.
    */
   display?: DisplayFont
+  /**
+   * A SECOND face, for signwriting. Not a heading face.
+   *
+   * Only a skin that has somewhere to put it will draw it — today that is the
+   * venue skin's `window` hero, where it is the lettering painted on the
+   * glass. Everything else on the site stays in `display`, which is the point:
+   * a hand-painted face used twice is a signature and used everywhere is a
+   * novelty shop.
+   *
+   * Unset draws nothing and costs nothing — the face is only downloaded by a
+   * site that names it.
+   */
+  signage?: DisplayFont
   /** Body size the whole type scale grows from. Default clamps around 1rem. */
   typeBase?: string
   /** How fast it grows. 1.125 tight, 1.25 default, 1.333 dramatic. */

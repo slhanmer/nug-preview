@@ -160,6 +160,46 @@ export function Hero({ block }: { block: BlockData }) {
    * an empty column is a visible layout fault, a missing background is an
    * invisible one, and the invisible one is worse to ship.
    */
+  /*
+   * A SHOPFRONT, and the reason it is not type over a photograph.
+   *
+   * The obvious way to make a hero look like a window is to set the heading on
+   * the glass, over the picture. This skin refuses that everywhere else and
+   * for a good reason — contrast over an image cannot be measured — so it is
+   * not going to start here.
+   *
+   * A real shopfront already solves it: the lettering goes on ONE pane and you
+   * see the room through the OTHER. So the frame is ink, the panes are divided
+   * by a mullion of the same ink, the words sit on a solid pane that measures,
+   * and the photograph is what is behind the glass. The transom rule above the
+   * eyebrow is the signwriting band every shopfront on that street has.
+   *
+   * Nothing here draws their artwork. The frame is structure; their painting
+   * stays in their own photographs, where it belongs.
+   */
+  if (layout === 'window' && photo?.url) {
+    return (
+      <section className={`${styles.section} ${styles.heroWindow}`}>
+        <div className={styles.wide}>
+          <div className={styles.windowFrame}>
+            <div className={styles.windowGlass}>
+              <HeroImage photo={photo} className={styles.glassView} />
+              <div className={styles.painted}>
+                {eyebrow ? <p className={styles.paintedTransom}>{eyebrow}</p> : null}
+                <h1 className={styles.paintedHeading}>{heading}</h1>
+                {sub ? <p className={`${styles.lede} ${styles.heroSub}`}>{sub}</p> : null}
+                <div className={styles.actions}>
+                  <Action cta={primaryCta} kind="primary" />
+                  <Action cta={secondaryCta} kind="secondary" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   if (layout === 'split' && photo?.url) {
     return (
       <section className={`${styles.section} ${styles.heroSplit}`}>

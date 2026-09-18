@@ -144,7 +144,14 @@ export default defineDemo({
       blocks: (ref) => [
         {
           blockType: 'hero',
-          layout: 'split',
+          /*
+           * The window, and only on this page. Their shopfront is the best
+           * thing they own — painted glass, lettering on one pane and the room
+           * visible through the next — so the site opens as one. The inner
+           * pages stay `split`: a device used on every page is a layout, and a
+           * layout is not a first impression.
+           */
+          layout: 'window',
           eyebrow: 'Bakery Lane, Fortitude Valley',
           heading: 'Handmade pasta, four nights a week',
           sub: 'Dinner Wednesday to Saturday, 5pm until 9:30pm. A general store the rest of the time.',

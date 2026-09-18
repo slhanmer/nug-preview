@@ -159,6 +159,53 @@ const PALETTES: Palette[] = [
     tint: 0.6,
     only: 'light',
   },
+  /*
+   * NUG. — the second plane-only brand colour, and it is here to show the
+   * first one was not a special case.
+   *
+   * Both values are sampled out of the client's own photographs rather than
+   * picked: #bd934d is the lit ochre wall, measured in the dining room shot
+   * and again in the shop window, and the ink is the black of the mural drawn
+   * over it. The ink is very slightly GREEN — OKLCH hue 135 at chroma 0.019 —
+   * which is the smallest chroma in this file and is deliberate: a neutral
+   * black on a warm cream reads as a hole, and every photograph on that site
+   * is warm.
+   *
+   * The ochre measures 2.45:1 as type on this ground, so like Zmirk's orange
+   * it can only ever be a plane. Unlike Zmirk's it sits COMFORTABLY clear of
+   * the polarity threshold rather than beside it — L 0.688 against 0.55 — so
+   * its black label lands at 7.44:1 with the ink itself at 5.63:1. That
+   * distance is the reason this palette needed no argument and Zmirk's needed
+   * three paragraphs.
+   *
+   * STATED ground, same hue failure as Zmirk: #bd934d is OKLCH hue 78.5 and a
+   * derived ground takes it straight, which tints the page the same ochre as
+   * the bands and flattens both. #f2efe6 is hue 91.5 — warm paper.
+   */
+  {
+    name: 'nug. — the warm colour Zmirk could not route to --action',
+    primary: '#1e241b',
+    secondary: '#bd934d',
+    /*
+     * THE SAME VALUE AS `secondary`, AND THAT IS THE TEST. Zmirk's entry above
+     * exists to record that a loud warm colour could NOT be the action colour:
+     * --action-active drops L by 0.12 and its orange came to rest at 0.573,
+     * twenty-three thousandths above the polarity threshold, keeping a black
+     * label at 4.39:1. This ochre starts far enough above 0.55 that the same
+     * drop lands at 0.568 and still measures 4.62:1. The pair of entries is
+     * the point: the rule is distance from the threshold, not warmth.
+     *
+     * TESTED DARK BECAUSE IT SHIPS DARK, which is this entry's second job. On
+     * a light ground this ochre is 2.45:1 and can only ever be a plane; on the
+     * charcoal it is 6.01:1 and is every heading on the site. Same hex,
+     * opposite ground, opposite role — and a palette signed off in one theme
+     * cannot be assumed to survive the other.
+     */
+    third: '#bd934d',
+    ground: '#191e17',
+    tint: 0.4,
+    only: 'dark',
+  },
 ]
 
 const THEMES = ['light', 'dark'] as const

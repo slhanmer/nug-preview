@@ -179,6 +179,202 @@
     object-fit: cover;
   }
 
+  /* ------------------------------------------------------ hero: window */
+
+  /*
+   * A SHOPFRONT, and the lettering is ON the glass.
+   *
+   * The first version of this put the words on their own pane beside the
+   * photograph, because this skin refuses type over an image and the reason is
+   * sound: contrast over a photograph cannot be measured, and a gradient heavy
+   * enough to guarantee the type ruins the picture.
+   *
+   * A real painted window solves it and it is not a compromise. Signwriting is
+   * OPAQUE paint — an enamel panel laid on the glass, with the room visible
+   * around it, not around the letters. So `.painted` is a solid `--ground`
+   * card sitting over the photograph, and every pair inside it is measured
+   * against that card exactly as it would be against the page. Nothing here
+   * relies on what the pixels behind it happen to be.
+   *
+   * `--frame` is the only number worth arguing about. Below ~0.6rem it reads
+   * as a border on a card, above ~1.25rem as a picture mount. A shopfront is
+   * in between, and it scales because a frame stuck at 12px on a phone is a
+   * hairline.
+   */
+  .heroWindow {
+    /*
+     * SLIM, because theirs are slim. The shopfront in these photographs is
+     * powder-coated steel: a thin dark section holding a lot of glass, which
+     * is the opposite of the chunky mount this started as. A heavy frame reads
+     * as a picture on a wall; a thin one reads as a building.
+     */
+    --frame: clamp(0.45rem, 0.8vw, 0.7rem);
+    /*
+     * The frame is a DARK VERSION OF THE LOUD COLOUR, not the ink.
+     *
+     * A steel shopfront is never neutral black; it is powder-coated in
+     * something close to the business's own colour and it reads as warm even
+     * at that lightness. Derived rather than stated so this holds for the next
+     * client too: the mix lands at OKLCH L~0.34 with the action's hue, which
+     * for Nug is within a few units of the #4a310d off their own frames.
+     */
+    --window-frame: color-mix(in oklab, var(--action) 50%, black);
+    /*
+     * The pane is ALWAYS the dark ground, in either theme, and that is not a
+     * convenience. On a light ground the ladder picks the darker brand colour
+     * as `--fill`; on a dark ground it picks the lighter one. Anchoring the
+     * pane to `--fill` therefore inverts it the moment a site flips theme —
+     * this one did, and the pane came out ochre with ochre type on it. The
+     * `--ground-dark` triplet is set by brandVars for both themes, so it means
+     * the same thing whichever one is in force. Same for the label, which
+     * takes the light ground.
+     */
+    --pane: oklch(var(--ground-dark-l) var(--ground-dark-c) var(--ground-dark-h));
+    --pane-on: oklch(var(--ground-light-l) var(--ground-light-c) var(--ground-light-h));
+    padding-block: clamp(2rem, 5vw, 4rem);
+    background: var(--surface);
+    border-block-end: 1px solid var(--edge);
+  }
+
+  .windowFrame {
+    background: var(--window-frame);
+    padding: var(--frame);
+    border-radius: max(var(--radius, 0rem), 0.25rem);
+  }
+
+  .windowGlass {
+    position: relative;
+    display: grid;
+  }
+
+  /*
+   * BOTH CHILDREN OCCUPY THE SAME CELL. Without the explicit grid-area the
+   * photograph and the pane become two rows and the hero stops being a window
+   * at all — the pane sits above the picture with the frame colour filling the
+   * space beside it. Removing this by accident is exactly what happened once.
+   */
+  .glassView {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    grid-area: 1 / 1;
+    /* A phone is nearly square here; 4:3 keeps the room readable above the
+       pane, which stacks under it below the split breakpoint. */
+    aspect-ratio: 4 / 3;
+  }
+
+  /*
+   * GLASS, AND IT IS STILL MEASURED. This is the one place in the skin where
+   * type sits over a photograph, and it is allowed because the panel puts a
+   * FLOOR under the composite rather than hoping about it.
+   *
+   * A backdrop cannot be lighter than white. So the worst case behind this
+   * panel is `--fill` at 82% over pure white, which composites to #474b44 —
+   * a known colour, not a guess. Against that floor: the ochre heading is
+   * 3.16:1 against the 3.0 large-text bar (it is 44px at its smallest) and
+   * the body label is 7.75:1 against 4.5. Over this actual photograph both
+   * are far better; the heading measures around 5.5.
+   *
+   * ⚠️ 82% IS THE FLOOR AND NOT A TASTE. 78% puts the heading at 2.74 and it
+   * fails outright against a white backdrop. Every step of see-through from
+   * here costs the heading, because the heading is the ochre and the ochre has
+   * almost nothing spare: it measures 2.45 on the page's own cream. If it has
+   * to be glassier than this, the colour has to change.
+   *
+   * `backdrop-filter` does not weaken the bound. Blur averages a region, and
+   * an average cannot exceed the region's maximum, so white remains the worst
+   * case. It is a progressive enhancement either way: a browser without it
+   * shows the same tint and the same floor, just without the softening.
+   */
+  .painted {
+    background: color-mix(in oklab, var(--pane) 82%, transparent);
+    z-index: 2;
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    backdrop-filter: blur(16px) saturate(1.15);
+    /* The edge of a pane, not a border on a card. */
+    border: 1px solid color-mix(in oklab, var(--pane-on) 16%, transparent);
+    color: var(--pane-on);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  /*
+   * Everything inside the pane is coloured against the PANE, not the page.
+   * The section-level rules below assume `--ground` behind them and would put
+   * ink-on-ink here.
+   */
+  .painted .lede {
+    color: color-mix(in oklab, var(--pane-on) 86%, transparent);
+  }
+
+  .painted .secondary {
+    border-color: color-mix(in oklab, var(--pane-on) 45%, transparent);
+    color: var(--pane-on);
+  }
+
+  .painted .secondary:hover {
+    border-color: var(--pane-on);
+    color: var(--pane-on);
+  }
+
+  @media (width >= 54rem) {
+    .glassView {
+      aspect-ratio: 16 / 9;
+    }
+
+    .painted {
+      grid-area: 1 / 1;
+      align-self: center;
+      justify-self: start;
+      /* Left, because the mural and the room are on the right of this frame
+         and covering them is covering the reason the photograph is here. */
+      margin-inline-start: clamp(1.5rem, 4vw, 3.5rem);
+      max-inline-size: min(30rem, 46%);
+      box-shadow: 0 1.25rem 3rem -1.5rem rgb(0 0 0 / 0.45);
+    }
+  }
+
+  /*
+   * The painted face, and ONLY here.
+   *
+   * Falls back to the display face when a site names no signage font, so a
+   * skin that draws this hero without one gets its own headings rather than a
+   * system cursive.
+   */
+  .paintedHeading {
+    font-family: var(--signage, var(--display));
+    font-weight: 400;
+    line-height: var(--signage-leading, 1.1);
+    letter-spacing: var(--signage-tracking, 0);
+    /*
+     * Larger than the regular hero heading, because a hand-painted face at the
+     * same size reads as smaller — the x-height is lower and the strokes are
+     * lighter than a geometric at the same nominal point size.
+     */
+    font-size: clamp(2.75rem, 6.5vw, 4.75rem);
+    margin: 0 0 0.35rem;
+    /* Their wall colour, which on the ink pane is finally allowed to be type —
+       it is a plane colour on the page because it measures 2.45 on the cream,
+       and the same hex measures 3.88 worst-case here. Same colour, opposite
+       ground. */
+    color: var(--action);
+  }
+
+  /* The signwriting band every shopfront on that street has: a rule, not a
+     chip. */
+  .paintedTransom {
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--pane-on) 72%, transparent);
+    padding-block-end: 0.8rem;
+    margin-block-end: 1.2rem;
+    border-block-end: 1px solid color-mix(in oklab, var(--pane-on) 22%, transparent);
+  }
+
   /* ------------------------------------------------------- hero: split */
 
   /*
@@ -375,7 +571,18 @@
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 5 / 4;
+    /*
+     * PORTRAIT, and it was 5 / 4.
+     *
+     * The same mistake the showcase hero already documents about itself, one
+     * component along: a landscape band is right for a wide sharp photograph
+     * and wrong for everything a small business actually owns, because their
+     * pictures come off a phone grid. Nug has eight photographs and seven are
+     * portrait or square — a centred 5:4 of their shopfront cut the top off
+     * their own painted sign, which is the one thing in the frame with their
+     * name on it.
+     */
+    aspect-ratio: 4 / 5;
     object-fit: cover;
   }
 

@@ -62,6 +62,42 @@ export default buildConfig({
     {
       slug: 'media',
       access: { read: () => true },
+      /*
+       * SERVE UPLOADS OFF THE CDN, NOT THROUGH A FUNCTION.
+       *
+       * Payload addresses an upload as /api/media/file/<name>, which is a
+       * route: every photograph on a page is a serverless invocation that
+       * reads the file off disk and streams it back. Measured on the Nug
+       * deployment, warm, same bytes: 1172ms through the route against 430ms
+       * for /media/<name> straight off Vercel's edge. A page with eight
+       * photographs pays that eight times, and a cold start pays more.
+       *
+       * The files are already in public/media and are committed, so the static
+       * path exists and is cached. This rewrites what Payload hands the page —
+       * the original and every generated size — to use it.
+       *
+       * ⚠️ Only sound while uploads are seeded at build time, which is what a
+       * mock is. A live client uploading through the admin on a read-only
+       * serverless filesystem is already broken for other reasons; the day
+       * that has to work, this collection moves to object storage and this
+       * hook comes out with it.
+       */
+      hooks: {
+        afterRead: [
+          ({ doc }) => {
+            const staticUrl = (url: unknown) =>
+              typeof url === 'string' ? url.replace(/^\/api\/media\/file\//, '/media/') : url
+
+            doc.url = staticUrl(doc.url)
+            for (const size of Object.values(doc.sizes ?? {})) {
+              if (size && typeof size === 'object') {
+                ;(size as { url?: unknown }).url = staticUrl((size as { url?: unknown }).url)
+              }
+            }
+            return doc
+          },
+        ],
+      },
       upload: {
         staticDir: path.resolve(dirname, 'public/media'),
         mimeTypes: ['image/*'],

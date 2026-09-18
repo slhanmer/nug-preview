@@ -92,12 +92,19 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
    * makes the config the override and the skin the default, in that order.
    */
   const display = siteConfig.style?.display ? DISPLAY_FONTS[siteConfig.style.display] : null
+  /*
+   * Same mechanism, second slot. Both variables have to land on <html> or the
+   * face is requested and never resolves, so the class names are joined rather
+   * than one winning.
+   */
+  const signage = siteConfig.style?.signage ? DISPLAY_FONTS[siteConfig.style.signage] : null
+  const faces = [display?.variable, signage?.variable].filter(Boolean).join(' ')
 
   return (
     <html
       lang="en"
       data-theme={theme === 'system' ? undefined : theme}
-      className={display?.variable}
+      className={faces || undefined}
       style={{
         ...brandVars(siteConfig.brand),
         ...shapeVars(siteConfig.style),
@@ -106,6 +113,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
               '--display-site': display.stack,
               '--display-leading': display.leading,
               '--display-tracking': display.tracking,
+            }
+          : {}),
+        ...(signage
+          ? {
+              '--signage': signage.stack,
+              '--signage-leading': signage.leading,
+              '--signage-tracking': signage.tracking,
             }
           : {}),
       }}

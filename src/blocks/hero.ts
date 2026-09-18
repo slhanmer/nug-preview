@@ -46,6 +46,7 @@ export const hero: Block = {
       options: [
         { label: 'Showcase — full width photograph, type over it', value: 'showcase' },
         { label: 'Split — type one side, photograph the other', value: 'split' },
+        { label: 'Window — the split inside a shopfront frame', value: 'window' },
         { label: 'Mark — the image full width on its own, type beneath', value: 'mark' },
         { label: 'Plain — type only, no photograph', value: 'plain' },
       ],

@@ -1,13 +1,15 @@
 {
-  "name": "nug-preview",
+  "name": "starter",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare": "simple-git-hooks",
     "dev": "next dev",
     "new": "node scripts/new-demo.mjs",
     "use": "node scripts/use-demo.mjs",
     "seed": "node scripts/seed.mjs",
+    "user": "node scripts/user.mjs",
     "eject": "node scripts/eject.mjs",
     "build": "next build",
     "start": "next start",
@@ -19,7 +21,9 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test"
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",

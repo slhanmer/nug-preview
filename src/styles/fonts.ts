@@ -1,4 +1,4 @@
-import { Baloo_2, Jost, Pacifico } from 'next/font/google'
+import { Baloo_2, Caveat, Jost, Pacifico } from 'next/font/google'
 
 /**
  * Display typefaces a site may choose, by name.
@@ -50,6 +50,26 @@ const jost = Jost({
   variable: '--font-jost',
 })
 
+/*
+ * A PAINT PEN, and it is here for signwriting rather than for headings.
+ *
+ * Small food businesses write on their own windows. The lettering is a single
+ * pressure-varied stroke with open, slightly irregular forms — nothing in the
+ * geometric or grotesk families gets near it, and a formal script is the wrong
+ * answer twice over because a script has thicks and thins from a nib and this
+ * has them from a hand moving.
+ *
+ * 600 rather than 400: at 400 Caveat is a note left on a fridge. At 600 it has
+ * enough body to be paint on glass at hero size, which is the only size any
+ * site should ever set it at.
+ */
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: '600',
+  display: 'swap',
+  variable: '--font-caveat',
+})
+
 export const DISPLAY_FONTS = {
   /*
    * Monoline, rounded, one continuous stroke — which is what makes it read as a
@@ -90,6 +110,17 @@ export const DISPLAY_FONTS = {
      */
     leading: '1.14',
     tracking: '0.02em',
+  },
+  painted: {
+    variable: caveat.variable,
+    stack: "var(--font-caveat), 'Bradley Hand', 'Segoe Script', cursive",
+    /*
+     * Loose leading and NO tracking. A hand does not letterspace, and the
+     * ascenders here are long and loop — the same reason `script` carries 1.25
+     * rather than a skin's default 1.06.
+     */
+    leading: '1.1',
+    tracking: '0',
   },
 } as const
 
