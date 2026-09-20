@@ -161,8 +161,10 @@ export default defineDemo({
         },
 
         {
+          /* No heading. Three facts under a rule say what they are; a label
+             over them was the only unstylish thing in the section, and it was
+             naming the obvious. The titles carry the painted face instead. */
           blockType: 'featureGrid',
-          heading: 'The short version',
           layout: 'grid',
           items: [
             {

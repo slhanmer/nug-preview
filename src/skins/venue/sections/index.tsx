@@ -286,7 +286,7 @@ export function MediaSplit({ block }: { block: BlockData }) {
             />
           ) : null}
         </div>
-        <div>
+        <div className={styles.splitPanel}>
           <h2 className={`${styles.heading} ${styles.splitHeading}`}>{heading}</h2>
           <RichText value={body} className={styles.body} />
           {cta?.label && cta.href ? (

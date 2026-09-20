@@ -111,7 +111,9 @@ const siteConfig: SiteConfig = {
      * the descriptor carries the half of the business the mark cannot mention
      * — which is also the half this whole pitch is about.
      */
-    descriptor: 'General store',
+    /* Leads with the pasta. "General store" alone read as the whole business
+       and the pasta is what the four-night service is for; both are theirs. */
+    descriptor: 'Handmade pasta & general store',
     tagline: 'Handmade pasta, Bakery Lane',
     address: '694 Ann Street, Bakery Lane, Fortitude Valley QLD 4006',
     phone: '0468 669 391',

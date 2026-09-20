@@ -550,45 +550,127 @@
 
   /* ----------------------------------------------------------- mediaSplit */
 
+  /*
+   * THE WHOLE PHOTOGRAPH, WITH THE TYPE OVERLAPPING ITS INSIDE EDGE.
+   *
+   * Two columns of equal width left a tall portrait beside three lines of type
+   * and a dead half-column under them. A full-width landscape band fixed the
+   * emptiness and cost half the picture: these are phone-grid portraits, so a
+   * 16:9 crop of the shopfront cut the top off their own painted sign.
+   *
+   * So the image is never cropped and never stretched — it is sized by HEIGHT
+   * and keeps its own shape, whatever shape the client's file happens to be —
+   * and the panel closes the gap by sitting on its inside edge rather than
+   * beside it. The pair is centred as one object, so there is no dead column
+   * on either side to read as empty.
+   */
   .split {
-    display: grid;
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: center;
-    grid-template-columns: 1fr;
-  }
-
-  @media (width >= 52rem) {
-    .split {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .splitRight .splitMedia {
-      order: 2;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
   }
 
   .splitMedia img {
     display: block;
     width: 100%;
     height: auto;
-    /*
-     * PORTRAIT, and it was 5 / 4.
-     *
-     * The same mistake the showcase hero already documents about itself, one
-     * component along: a landscape band is right for a wide sharp photograph
-     * and wrong for everything a small business actually owns, because their
-     * pictures come off a phone grid. Nug has eight photographs and seven are
-     * portrait or square — a centred 5:4 of their shopfront cut the top off
-     * their own painted sign, which is the one thing in the frame with their
-     * name on it.
-     */
+    /* Stacked, with nothing over it: the crop the picture was taken in. */
     aspect-ratio: 4 / 5;
     object-fit: cover;
   }
 
+  @media (width >= 52rem) {
+    /*
+     * The contrast argument here is the window hero's, unchanged: the same
+     * `--pane` at the same 82%, so the same worst-case floor and the same
+     * measured pairs. 82% IS THE FLOOR AND NOT A TASTE — read the note on
+     * `.painted` before thinning it. Two differences, both deliberate: no
+     * steel surround, because that frame is what makes the hero a shopfront
+     * and borrowing it would make the two read as one component twice; and the
+     * heading takes `--pane-on` rather than the ochre, because at half the
+     * hero heading's size it is measured against the 4.5 bar, not the 3.0.
+     */
+    .split {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      --pane: oklch(var(--ground-dark-l) var(--ground-dark-c) var(--ground-dark-h));
+      --pane-on: oklch(var(--ground-light-l) var(--ground-light-c) var(--ground-light-h));
+    }
+
+    .splitMedia {
+      flex: none;
+    }
+
+    /*
+     * HEIGHT, NOT WIDTH, AND NOTHING IS CROPPED.
+     *
+     * Sizing by height is what lets a portrait and a landscape file sit in the
+     * same component without either being cut: the frame takes whatever width
+     * the file's own ratio gives it. It also guarantees the one thing a mock
+     * built from a client's Instagram cannot otherwise promise — Nug's files
+     * are 826px and 1003px wide and render here at roughly 430px and 465px, so
+     * every photograph is DOWNSCALED. No upscaling at any viewport.
+     */
+    .splitMedia img {
+      aspect-ratio: auto;
+      width: auto;
+      height: clamp(24rem, 44vw, 36rem);
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    /*
+     * Onto the photograph's inside edge. `position: relative` is load-bearing:
+     * without it the z-index does nothing and the image paints over the panel.
+     */
+    .splitPanel {
+      flex: none;
+      position: relative;
+      z-index: 1;
+      max-inline-size: min(26rem, 38vw);
+      margin-inline-start: clamp(-5.5rem, -6vw, -3rem);
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      background: color-mix(in oklab, var(--pane) 82%, transparent);
+      border: 1px solid color-mix(in oklab, var(--pane-on) 16%, transparent);
+      color: var(--pane-on);
+      -webkit-backdrop-filter: blur(16px) saturate(1.15);
+      backdrop-filter: blur(16px) saturate(1.15);
+      box-shadow: 0 1.25rem 3rem -1.5rem rgb(0 0 0 / 0.45);
+    }
+
+    /* `side` named which side the photograph took and still does — the blocks
+       alternate down the page, which is all it was ever doing. */
+    .splitRight {
+      flex-direction: row-reverse;
+    }
+
+    .splitRight .splitPanel {
+      margin-inline-start: 0;
+      margin-inline-end: clamp(-5.5rem, -6vw, -3rem);
+    }
+
+    /* Coloured against the PANE, not the page — the section-level rules
+       assume `--ground` behind them and would put ink on ink here. */
+    .splitPanel .secondary {
+      border-color: color-mix(in oklab, var(--pane-on) 45%, transparent);
+      color: var(--pane-on);
+    }
+
+    .splitPanel .secondary:hover {
+      border-color: var(--pane-on);
+      color: var(--pane-on);
+    }
+
+    .splitPanel .actions {
+      margin-block-start: 1.5rem;
+    }
+  }
+
   .splitHeading {
-    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-    margin-block-end: 1.25rem;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    margin-block-end: 1rem;
   }
 
   /* ----------------------------------------------------------- featureGrid */
@@ -634,6 +716,17 @@
     font-weight: 400;
     font-size: 1.375rem;
     margin: 0 0 0.6rem;
+  }
+
+  /*
+   * The signage face where a site has one. Three facts under a rule are the
+   * page's plainest moment, and in the same grotesk as the body they read as a
+   * list — the heading above them was carrying all the style. Scoped, so a
+   * one-face site is untouched.
+   */
+  :global([style*='--signage']) .cardTitle {
+    font-family: var(--signage, var(--display));
+    letter-spacing: 0.01em;
   }
 
   .cardBody {
